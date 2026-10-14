@@ -11,6 +11,7 @@ Read `CONTEXT.md` before changing the product. Skills live under `.agents/skills
 ## Skills
 
 - Python and FastAPI, including settings and types: `fastapi`.
+- Next.js and Tailwind class names: `frontend`.
 
 Type every change in Python and TypeScript.
 - A new or changed route: `bruno-endpoints`.

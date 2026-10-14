@@ -43,7 +43,7 @@ The old tables, and which ones were CMS, are in [[docs/legacy-database|Legacy da
 - API configuration is one pydantic-settings object. Local, dev, and prod differ by environment variables.
 - Authorization is RBAC in Postgres: roles and `resource:action` permissions. The browser uses an HTTP-only cookie. Local, dev, and prod change that cookie through settings.
 - A user account is email and password. Redis waits until a read path needs a cache.
-- Node 22 or newer, pnpm, Next.js, React, Biome. `pnpm lint` runs Ruff and Biome.
+- Node 22 or newer, pnpm, Next.js, React, Tailwind 4, Biome. `pnpm lint` runs Ruff and Biome. Class names follow the `frontend` skill.
 - CI is `.github/workflows/ci.yml`.
 
 ## API checks
