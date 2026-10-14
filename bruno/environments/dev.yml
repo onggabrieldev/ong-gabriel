@@ -1,0 +1,7 @@
+name: dev
+variables:
+  - name: baseUrl
+    value: ""
+    enabled: true
+    secret: false
+    description: Shared dev API origin. No trailing slash. Fill in when the host exists.

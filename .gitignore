@@ -31,3 +31,6 @@ Thumbs.db
 
 # Local snapshots of the previous split repositories
 /bkp-repos/
+
+# Obsidian vault UI state
+.obsidian/

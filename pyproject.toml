@@ -25,7 +25,7 @@ testpaths = ["backend/tests"]
 
 [tool.ruff]
 target-version = "py315"
-line-length = 88
+line-length = 120
 src = ["backend/src", "backend/tests"]
 extend-exclude = [".venv", "node_modules", "frontend", "bkp-repos"]
 
@@ -38,6 +38,6 @@ fixable = ["ALL"]
 known-first-party = ["ong_gabriel_api"]
 
 [tool.ruff.format]
-quote-style = "double"
+quote-style = "single"
 indent-style = "space"
 line-ending = "lf"
