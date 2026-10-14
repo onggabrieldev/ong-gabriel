@@ -123,7 +123,11 @@ export function ContactSection({ contact }: ContactSectionProps) {
                 <p id={hintId} className="pt-1 text-[0.6875rem] leading-snug text-muted">
                   {field.hint}
                 </p>
-                <p id={errorId} className="min-h-5 text-sm font-semibold text-danger">
+                <p
+                  id={errorId}
+                  className="min-h-5 text-sm font-semibold text-danger"
+                  aria-hidden={error ? undefined : true}
+                >
                   {error}
                 </p>
               </div>

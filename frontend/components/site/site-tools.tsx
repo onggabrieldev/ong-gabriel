@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { CloseIcon } from "@/components/icons/icon";
+import { useCloseOnBackdrop } from "@/components/ui/close-on-backdrop";
 import { helpContent } from "@/lib/site/navigation";
 
 const textSizeKey = "ong-gabriel-text-size";
@@ -11,6 +12,7 @@ export function SiteTools() {
   const titleId = useId();
   const helpRef = useRef<HTMLDialogElement>(null);
   const [largeText, setLargeText] = useState(false);
+  useCloseOnBackdrop(helpRef);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(textSizeKey) === "large";
@@ -64,7 +66,7 @@ export function SiteTools() {
         <form method="dialog" className="flex justify-end p-3">
           <button
             type="submit"
-            className="inline-flex size-11 items-center justify-center rounded-full"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-sky-deep"
           >
             <CloseIcon className="size-5" />
             <span className="sr-only">Fechar</span>
@@ -80,14 +82,14 @@ export function SiteTools() {
               href={helpContent.chatHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep"
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
             >
               {helpContent.chatLabel}
               <span className="sr-only"> (abre em uma nova aba)</span>
             </a>
             <a
               href={helpContent.callHref}
-              className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-sky px-4 text-label font-semibold text-ink-soft"
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full border border-line bg-sky px-4 text-label font-semibold text-ink-soft transition-colors hover:bg-sky-deep"
             >
               {helpContent.callLabel}
               <span className="sr-only">, número 188</span>

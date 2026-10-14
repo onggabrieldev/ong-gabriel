@@ -92,6 +92,11 @@ body {
   outline-offset: 3px;
 }
 
+::selection {
+  background: var(--color-soil);
+  color: var(--color-cream);
+}
+
 /* No background here: an unlayered value beats layered bg-* utilities. */
 dialog {
   margin: auto;

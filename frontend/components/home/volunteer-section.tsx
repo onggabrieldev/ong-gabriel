@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useId, useRef } from "react";
 import { CloseIcon } from "@/components/icons/icon";
+import { useCloseOnBackdrop } from "@/components/ui/close-on-backdrop";
 import type { VolunteerContent } from "@/lib/home/types";
 
 type VolunteerSectionProps = {
@@ -11,7 +12,9 @@ type VolunteerSectionProps = {
 
 export function VolunteerSection({ volunteer }: VolunteerSectionProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogId = useId();
   const titleId = useId();
+  useCloseOnBackdrop(dialogRef);
 
   return (
     <section aria-labelledby="volunteer-title" className="bg-canvas">
@@ -32,6 +35,8 @@ export function VolunteerSection({ volunteer }: VolunteerSectionProps) {
           <button
             type="button"
             className="mt-10 inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-5 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
+            aria-haspopup="dialog"
+            aria-controls={dialogId}
             onClick={() => dialogRef.current?.showModal()}
           >
             {volunteer.actionLabel}
@@ -49,13 +54,14 @@ export function VolunteerSection({ volunteer }: VolunteerSectionProps) {
 
       <dialog
         ref={dialogRef}
+        id={dialogId}
         aria-labelledby={titleId}
         className="w-[min(100%,--spacing(112))] rounded-xl bg-canvas text-text"
       >
         <form method="dialog" className="flex justify-end p-3">
           <button
             type="submit"
-            className="inline-flex size-11 items-center justify-center rounded-full"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-sky-deep"
           >
             <CloseIcon className="size-5" />
             <span className="sr-only">Fechar</span>
@@ -75,7 +81,7 @@ export function VolunteerSection({ volunteer }: VolunteerSectionProps) {
               href={volunteer.destinationHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-saffron px-4 text-label font-semibold text-ink-soft"
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-saffron px-4 text-label font-semibold text-ink-soft transition-colors hover:bg-saffron-soft"
             >
               {volunteer.confirmAction}
               <span className="sr-only"> (abre em uma nova aba)</span>
@@ -83,7 +89,7 @@ export function VolunteerSection({ volunteer }: VolunteerSectionProps) {
             <form method="dialog">
               <button
                 type="submit"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full border border-ink-soft px-4 text-label font-semibold"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-full border border-ink-soft px-4 text-label font-semibold transition-colors hover:bg-sky"
               >
                 {volunteer.cancelLabel}
               </button>

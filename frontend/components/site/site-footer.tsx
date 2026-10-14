@@ -9,7 +9,10 @@ export function SiteFooter() {
     <footer className="bg-canvas text-text">
       <div className="mx-auto flex max-w-360 flex-col gap-8 px-6 py-12 lg:px-20">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-full transition-colors hover:text-indigo"
+          >
             <Image src="/brand/logo.svg" alt="" width={54} height={54} />
             <span className="text-title font-bold text-soil">{siteBrand}</span>
           </Link>
