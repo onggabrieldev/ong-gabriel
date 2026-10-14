@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
+/*
+  Tokens follow the Figma variables in Styles.
+  Color utilities read the @theme names (bg-cream, text-indigo).
+  Type utilities: text-display, text-headline, text-title, text-label, text-body.
+*/
+@theme {
+  --font-sans: var(--font-raleway), "Segoe UI", sans-serif;
+  --font-display: var(--font-gabriela), Georgia, serif;
+
+  --color-cream: #fffbf2;
+  --color-canvas: #fdfdfd;
+  --color-ink: #13110c;
+  --color-ink-soft: #26241f;
+  --color-text: #363530;
+  --color-muted: #53514e;
+  --color-placeholder: #959492;
+  --color-line: #dcdbdb;
+  --color-indigo: #353886;
+  --color-indigo-deep: #23283d;
+  --color-navy: #374571;
+  --color-slate: #455488;
+  --color-sky: #f3f7fb;
+  --color-sky-deep: #d5e0ef;
+  --color-sky-mid: #afc6e1;
+  --color-saffron: #ffb836;
+  --color-saffron-soft: #ffc65e;
+  --color-soil: #693300;
+  --color-graphite: #342b2b;
+  --color-mint: #bee8d2;
+  --color-sun: #f0c84a;
+  --color-danger: #9b1c1c;
+
+  --text-display: 4rem;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: 0.02em;
+  --text-headline: 2.8125rem;
+  --text-headline--line-height: 1.1;
+  --text-headline--letter-spacing: 0.01em;
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: 0.02em;
+  --text-label: 1.125rem;
+  --text-label--line-height: 1.5625rem;
+  --text-label--letter-spacing: 0.02em;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.5625rem;
+  --text-body--letter-spacing: 0.02em;
+
+  --shadow-header: 0 2px 5px rgb(0 0 0 / 0.1);
+  --shadow-card: 2px 2px 2px rgb(0 0 0 / 0.15);
+  --shadow-photo: 2px 2px 4px rgb(0 0 0 / 0.2);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --page: var(--color-canvas);
+  --focus: var(--color-indigo);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html[data-text-size="large"] {
+  font-size: 112.5%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: var(--text-body--line-height);
+  letter-spacing: var(--text-body--letter-spacing);
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* No background here: an unlayered value beats layered bg-* utilities. */
+dialog {
+  margin: auto;
+  max-width: calc(100vw - 2rem);
+  border: 0;
+  padding: 0;
+}
+
+dialog::backdrop {
+  background: rgb(19 17 12 / 0.45);
 }
