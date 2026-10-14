@@ -37,6 +37,7 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 ```python
 MISSING = sentinel('MISSING')
 
+
 def save(title: str | MISSING = MISSING) -> None:
     if title is MISSING:
         return
