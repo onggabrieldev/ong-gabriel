@@ -1,0 +1,24 @@
+{
+  "name": "ong-gabriel",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,magenta \"pnpm run dev:api\" \"pnpm run dev:web\"",
+    "dev:api": "uv run fastapi dev backend/src/ong_gabriel_api/main.py --host 127.0.0.1 --port 8000 --reload-dir backend",
+    "dev:web": "pnpm --filter frontend dev",
+    "lint": "pnpm run lint:api && pnpm run lint:web",
+    "lint:api": "uv run ruff check && uv run ruff format --check",
+    "lint:web": "biome check",
+    "format": "pnpm run format:api && pnpm run format:web",
+    "format:api": "uv run ruff check --fix && uv run ruff format",
+    "format:web": "biome check --write",
+    "test:api": "uv run pytest"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "concurrently": "^10.0.6"
+  }
+}

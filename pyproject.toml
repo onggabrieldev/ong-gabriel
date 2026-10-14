@@ -1,0 +1,43 @@
+[project]
+name = "ong-gabriel"
+version = "0.1.0"
+description = "ONG Gabriel"
+requires-python = ">=3.15"
+dependencies = ["ong-gabriel-api"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+ong-gabriel-api = { workspace = true }
+
+[tool.uv.workspace]
+members = ["backend"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+
+[tool.ruff]
+target-version = "py315"
+line-length = 88
+src = ["backend/src", "backend/tests"]
+extend-exclude = [".venv", "node_modules", "frontend", "bkp-repos"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ong_gabriel_api"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

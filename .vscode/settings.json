@@ -1,0 +1,34 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, package-lock.json, yarn.lock, bun.lock, bun.lockb, .npmrc, biome.json",
+    "pyproject.toml": "uv.lock, .python-version, poetry.lock, pdm.lock, requirements*.txt, Pipfile, Pipfile.lock",
+    "__init__.py": "*.py",
+    "conftest.py": "test_*.py, *_test.py",
+    "next.config.ts": "package.json, next-env.d.ts, tsconfig.json, tsconfig.*.json, postcss.config.*, prettier.config.*, .prettierrc, .prettierrc.*, components.json, .gitignore, README.md",
+    "next.config.mjs": "package.json, next-env.d.ts, tsconfig.json, tsconfig.*.json, postcss.config.*, prettier.config.*, .prettierrc, .prettierrc.*, components.json, .gitignore, README.md",
+    "next.config.js": "package.json, next-env.d.ts, tsconfig.json, tsconfig.*.json, postcss.config.*, prettier.config.*, .prettierrc, .prettierrc.*, components.json, .gitignore, README.md",
+    "page.tsx": "layout.tsx, template.tsx, loading.tsx, error.tsx, global-error.tsx, not-found.tsx, forbidden.tsx, unauthorized.tsx, default.tsx, route.ts, route.tsx, globals.css, favicon.ico, icon.ico, icon.png, icon.svg, apple-icon.png, apple-icon.svg, opengraph-image.png, opengraph-image.jpg, opengraph-image.tsx, twitter-image.png, twitter-image.tsx, sitemap.ts, sitemap.xml, robots.ts, robots.txt, page.module.css, page.module.scss",
+    "page.ts": "layout.ts, template.ts, loading.ts, error.ts, not-found.ts, default.ts, route.ts, globals.css, favicon.ico, icon.ico, icon.png, icon.svg, sitemap.ts, robots.ts",
+    "page.jsx": "layout.jsx, template.jsx, loading.jsx, error.jsx, not-found.jsx, default.jsx, route.js, globals.css, favicon.ico",
+    "*.tsx": "$(capture).module.css, $(capture).module.scss, $(capture).css, $(capture).test.tsx, $(capture).test.ts, $(capture).stories.tsx",
+    "*.ts": "$(capture).test.ts, $(capture).js, $(capture).d.ts"
+  },
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "biome.requireConfiguration": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  }
+}
