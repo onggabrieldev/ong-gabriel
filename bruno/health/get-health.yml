@@ -1,0 +1,23 @@
+info:
+  name: Health
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/health"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("body status is ok", function () {
+          expect(res.body.status).to.equal("ok");
+        });
+
+settings:
+  encodeUrl: true

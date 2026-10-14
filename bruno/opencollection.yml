@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: ONG Gabriel API
+bundled: false
+extensions:
+  bruno:
+    defaultEnvironment: local
+request:
+  headers:
+    - name: Accept
+      value: application/json
+  auth: inherit
