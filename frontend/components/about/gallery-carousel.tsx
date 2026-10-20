@@ -11,19 +11,98 @@ const speed = -55;
 // Three copies keep the track wider than the viewport while the offset wraps.
 const copies = [0, 1, 2] as const;
 
-type Track = {
+// A flick keeps gliding after release and slows down exponentially.
+// The glide covers about velocity × friction pixels.
+const friction = 0.35;
+const maxVelocity = 3000;
+const minVelocity = 120;
+const stopVelocity = 8;
+
+// Only the last moments of a drag count toward the release velocity.
+// A pointer held still before release does not glide.
+const sampleWindow = 100;
+const holdThreshold = 60;
+
+type Sample = {
+  offset: number;
+  time: number;
+};
+
+type Drag = {
+  pointerId: number;
+  startX: number;
+  startOffset: number;
+  samples: Sample[];
+};
+
+type Motion = {
   element: HTMLUListElement | null;
   offset: number;
   width: number;
+  velocity: number;
+  autoplay: boolean;
+  hovered: boolean;
+  drag: Drag | null;
+  frame: number;
+  last: number;
 };
 
 // Keeps the offset in [-width, 0) so a full copy always sits on each side of the viewport.
-function place(track: Track, next: number) {
-  const { width } = track;
-  track.offset = width > 0 ? ((((next + width) % width) + width) % width) - width : next;
-  if (track.element) {
-    track.element.style.transform = `translate3d(${track.offset}px, 0, 0)`;
+function place(motion: Motion, next: number) {
+  const { width } = motion;
+  motion.offset = width > 0 ? ((((next + width) % width) + width) % width) - width : next;
+  if (motion.element) {
+    motion.element.style.transform = `translate3d(${motion.offset}px, 0, 0)`;
   }
+}
+
+function isMoving(motion: Motion) {
+  return !motion.drag && (motion.velocity !== 0 || (motion.autoplay && !motion.hovered));
+}
+
+// Autoplay and the glide share one frame loop. It stops when nothing moves.
+function step(motion: Motion, now: number) {
+  const elapsed = Math.min(now - motion.last, 100) / 1000;
+  motion.last = now;
+
+  let shift = motion.autoplay && !motion.hovered ? speed * elapsed : 0;
+  if (motion.velocity !== 0) {
+    const decay = Math.exp(-elapsed / friction);
+    shift += motion.velocity * friction * (1 - decay);
+    motion.velocity *= decay;
+    if (Math.abs(motion.velocity) < stopVelocity) {
+      motion.velocity = 0;
+    }
+  }
+  if (shift !== 0) {
+    place(motion, motion.offset + shift);
+  }
+
+  motion.frame = isMoving(motion) ? requestAnimationFrame((time) => step(motion, time)) : 0;
+}
+
+function wake(motion: Motion) {
+  if (motion.frame === 0 && isMoving(motion)) {
+    motion.last = performance.now();
+    motion.frame = requestAnimationFrame((time) => step(motion, time));
+  }
+}
+
+function releaseVelocity(samples: readonly Sample[], releasedAt: number) {
+  const last = samples.at(-1);
+  if (!last || releasedAt - last.time > holdThreshold) {
+    return 0;
+  }
+  const first = samples.find((sample) => last.time - sample.time <= sampleWindow) ?? last;
+  const duration = last.time - first.time;
+  if (duration <= 0) {
+    return 0;
+  }
+  const velocity = ((last.offset - first.offset) / duration) * 1000;
+  if (Math.abs(velocity) < minVelocity) {
+    return 0;
+  }
+  return Math.max(-maxVelocity, Math.min(maxVelocity, velocity));
 }
 
 type GalleryCarouselProps = {
@@ -32,9 +111,17 @@ type GalleryCarouselProps = {
 };
 
 export function GalleryCarousel({ label, photos }: GalleryCarouselProps) {
-  const track = useRef<Track>({ element: null, offset: 0, width: 0 });
-  const hovered = useRef(false);
-  const drag = useRef<{ pointerId: number; startX: number; startOffset: number } | null>(null);
+  const motion = useRef<Motion>({
+    element: null,
+    offset: 0,
+    width: 0,
+    velocity: 0,
+    autoplay: false,
+    hovered: false,
+    drag: null,
+    frame: 0,
+    last: 0,
+  });
   const [paused, setPaused] = useState(false);
   const [dragging, setDragging] = useState(false);
 
@@ -45,7 +132,7 @@ export function GalleryCarousel({ label, photos }: GalleryCarouselProps) {
   }, []);
 
   useEffect(() => {
-    const current = track.current;
+    const current = motion.current;
     const element = current.element;
     if (!element) {
       return;
@@ -68,51 +155,66 @@ export function GalleryCarousel({ label, photos }: GalleryCarouselProps) {
   }, []);
 
   useEffect(() => {
+    const current = motion.current;
+    current.autoplay = !paused;
+    // Pausing stops a glide in progress too.
     if (paused) {
-      return;
+      current.velocity = 0;
     }
-
-    let frame = 0;
-    let last = performance.now();
-
-    function tick(now: number) {
-      const elapsed = Math.min(now - last, 100) / 1000;
-      last = now;
-      if (!hovered.current && !drag.current) {
-        place(track.current, track.current.offset + speed * elapsed);
-      }
-      frame = requestAnimationFrame(tick);
-    }
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    wake(current);
   }, [paused]);
+
+  useEffect(() => {
+    const current = motion.current;
+    return () => {
+      cancelAnimationFrame(current.frame);
+      current.frame = 0;
+    };
+  }, []);
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) {
       return;
     }
+    const current = motion.current;
     event.currentTarget.setPointerCapture(event.pointerId);
-    drag.current = {
+    // Grabbing the track catches a glide in progress.
+    current.velocity = 0;
+    current.drag = {
       pointerId: event.pointerId,
       startX: event.clientX,
-      startOffset: track.current.offset,
+      startOffset: current.offset,
+      samples: [{ offset: current.offset, time: event.timeStamp }],
     };
     setDragging(true);
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
-    const current = drag.current;
-    if (current?.pointerId === event.pointerId) {
-      place(track.current, current.startOffset + event.clientX - current.startX);
+    const current = motion.current;
+    const drag = current.drag;
+    if (drag?.pointerId !== event.pointerId) {
+      return;
+    }
+    // The wrap would read as a jump of a full copy, so samples use the unwrapped offset.
+    const offset = drag.startOffset + event.clientX - drag.startX;
+    place(current, offset);
+    drag.samples.push({ offset, time: event.timeStamp });
+    while (drag.samples.length > 2 && event.timeStamp - drag.samples[0].time > sampleWindow) {
+      drag.samples.shift();
     }
   }
 
-  function onPointerEnd(event: PointerEvent<HTMLDivElement>) {
-    if (drag.current?.pointerId === event.pointerId) {
-      drag.current = null;
-      setDragging(false);
+  function endDrag(event: PointerEvent<HTMLDivElement>, glide: boolean) {
+    const current = motion.current;
+    const drag = current.drag;
+    if (drag?.pointerId !== event.pointerId) {
+      return;
     }
+    current.drag = null;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    current.velocity = glide && !reduceMotion ? releaseVelocity(drag.samples, event.timeStamp) : 0;
+    setDragging(false);
+    wake(current);
   }
 
   return (
@@ -121,20 +223,21 @@ export function GalleryCarousel({ label, photos }: GalleryCarouselProps) {
         className={`touch-pan-y overflow-hidden select-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
+        onPointerUp={(event) => endDrag(event, true)}
+        onPointerCancel={(event) => endDrag(event, false)}
         onPointerEnter={(event) => {
-          hovered.current = event.pointerType === "mouse";
+          motion.current.hovered = event.pointerType === "mouse";
         }}
         onPointerLeave={() => {
-          hovered.current = false;
+          motion.current.hovered = false;
+          wake(motion.current);
         }}
       >
         <ul
           aria-label={label}
           className="flex w-max gap-3.5 will-change-transform"
           ref={(element) => {
-            track.current.element = element;
+            motion.current.element = element;
           }}
         >
           {copies.map((copy) =>
