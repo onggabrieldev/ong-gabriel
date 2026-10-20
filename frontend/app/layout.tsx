@@ -3,6 +3,7 @@ import { Gabriela, Raleway } from "next/font/google";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteTools } from "@/components/site/site-tools";
+import { Toaster } from "@/components/ui/toast";
 import { siteName } from "@/lib/site/navigation";
 import "./globals.css";
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter />
         <SiteTools />
+        <Toaster />
       </body>
     </html>
   );
