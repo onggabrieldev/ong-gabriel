@@ -31,6 +31,10 @@
   --color-mint: #bee8d2;
   --color-sun: #f0c84a;
   --color-danger: #9b1c1c;
+  --color-butter: #ffecae;
+  --color-periwinkle: #a7b5ff;
+  --color-teal: #7ab8c0;
+  --color-midnight: #182135;
 
   --text-display: 4rem;
   --text-display--line-height: 1;
@@ -51,6 +55,7 @@
   --shadow-header: 0 2px 5px rgb(0 0 0 / 0.1);
   --shadow-card: 2px 2px 2px rgb(0 0 0 / 0.15);
   --shadow-photo: 2px 2px 4px rgb(0 0 0 / 0.2);
+  --shadow-panel: 2px -1px 10px rgb(0 0 0 / 0.25), 1px 2px 10px rgb(0 0 0 / 0.25);
 }
 
 :root {

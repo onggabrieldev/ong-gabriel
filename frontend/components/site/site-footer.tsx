@@ -51,7 +51,6 @@ export function SiteFooter() {
         <hr className="border-line" />
 
         <div className="flex flex-col items-center gap-3 text-center text-sm font-medium text-muted">
-          <p>Produzido por Squad Luz Rosa, voluntariado Pipoca Ágil.</p>
           <p>
             {siteName} © <CopyrightYear />. Todos os direitos reservados.
           </p>
