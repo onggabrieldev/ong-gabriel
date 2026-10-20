@@ -64,6 +64,23 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
+export function PauseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 6v12" />
+      <path d="M15 6v12" />
+    </Svg>
+  );
+}
+
+export function PlayIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M8 5.5v13l10-6.5z" fill="currentColor" />
+    </Svg>
+  );
+}
+
 export function SocialIcon({ id, ...props }: IconProps & { id: SocialNetwork }) {
   if (id === "instagram") {
     return (
