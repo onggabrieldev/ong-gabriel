@@ -41,16 +41,16 @@ export function OptionsSection({ options }: OptionsSectionProps) {
                   {pix.keyType}: <span className="font-semibold text-ink-soft">{pix.key}</span>
                 </p>
               </div>
-              <div className="flex flex-wrap gap-x-4">
+              <div className="flex flex-wrap gap-3">
                 <CopyButton
                   value={pix.keyValue}
                   label={pix.copyKeyLabel}
-                  copiedMessage="Chave Pix copiada."
+                  copiedMessage="Chave Pix copiada"
                 />
                 <CopyButton
                   value={pix.code}
                   label={pix.copyCodeLabel}
-                  copiedMessage="Código Pix copiado. Cole no app do seu banco."
+                  copiedMessage="Código Pix copiado"
                 />
               </div>
             </div>
