@@ -48,5 +48,10 @@ jobs:
       - name: Test API
         run: pnpm test:api
 
+      - name: Build frontend
+        run: pnpm --filter frontend build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+
       - name: Prune uv cache
         run: uv cache prune --ci
