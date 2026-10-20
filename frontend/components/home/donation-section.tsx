@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { HeartIcon } from "@/components/icons/icon";
 import { ButtonLink } from "@/components/ui/button-link";
+import { HoverHeart } from "@/components/ui/hover-heart";
 import type { DonationContent } from "@/lib/home/types";
 
 type DonationSectionProps = {
@@ -25,10 +25,7 @@ export function DonationSection({ donation }: DonationSectionProps) {
           </div>
           <ButtonLink href={donation.action.href} className="group mt-10">
             {donation.action.label}
-            <span className="relative size-6">
-              <HeartIcon className="size-6" />
-              <HeartIcon className="absolute inset-0 size-6 fill-red-600 text-red-600 opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none" />
-            </span>
+            <HoverHeart />
           </ButtonLink>
         </div>
         <div className="order-1 flex justify-center lg:order-2">

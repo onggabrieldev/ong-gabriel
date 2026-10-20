@@ -21,6 +21,7 @@ function isCurrent(href: string, pathname: string): boolean {
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const donationCurrent = isCurrent(donationLink.href, pathname) ? "page" : undefined;
   const menuId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -80,7 +81,7 @@ export function SiteHeader() {
         </ul>
 
         <div className="ms-4 hidden lg:block">
-          <ButtonLink href={donationLink.href} className="w-50">
+          <ButtonLink href={donationLink.href} aria-current={donationCurrent} className="w-50">
             {donationLink.label}
           </ButtonLink>
         </div>
@@ -135,7 +136,12 @@ export function SiteHeader() {
             );
           })}
         </ul>
-        <ButtonLink href={donationLink.href} className="mt-6 w-full" onClick={closeMenu}>
+        <ButtonLink
+          href={donationLink.href}
+          aria-current={donationCurrent}
+          className="mt-6 w-full"
+          onClick={closeMenu}
+        >
           {donationLink.label}
         </ButtonLink>
       </dialog>
