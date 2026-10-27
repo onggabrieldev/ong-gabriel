@@ -30,7 +30,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <>
-      <FeaturedCarousel posts={featured} copy={copy} />
+      <FeaturedCarousel
+        posts={featured}
+        copy={{
+          featuredRegionLabel: copy.featuredRegionLabel,
+          readPostLabel: copy.readPostLabel,
+          previousPostLabel: copy.previousPostLabel,
+          nextPostLabel: copy.nextPostLabel,
+        }}
+      />
       <Suspense fallback={<LatestPostsFallback copy={copy} categories={categories} />}>
         <LatestPosts searchParams={searchParams} copy={copy} categories={categories} />
       </Suspense>

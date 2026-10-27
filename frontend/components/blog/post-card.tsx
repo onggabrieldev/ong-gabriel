@@ -7,15 +7,18 @@ import type { Post } from "@/lib/blog/types";
 type PostCardProps = {
   post: Post;
   learnMoreLabel: string;
+  showExcerpt?: boolean;
 };
 
-export function PostCard({ post, learnMoreLabel }: PostCardProps) {
+export function PostCard({ post, learnMoreLabel, showExcerpt = true }: PostCardProps) {
   const href = `/blog/${post.slug}`;
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-md border border-line bg-canvas p-2.5">
       <Link
         href={href}
+        tabIndex={-1}
+        aria-hidden="true"
         className="block overflow-hidden rounded-sm transition-opacity hover:opacity-90"
       >
         <Image
@@ -36,10 +39,11 @@ export function PostCard({ post, learnMoreLabel }: PostCardProps) {
             {post.title}
           </Link>
         </h3>
-        <p className="text-body text-text">{post.excerpt}</p>
+        {showExcerpt ? <p className="text-body text-text">{post.excerpt}</p> : null}
         <div className="mt-auto flex justify-end">
           <ButtonLink href={href} variant="text" className="group h-12 px-4">
             {learnMoreLabel}
+            <span className="sr-only">: {post.title}</span>
             <ArrowRightIcon className="size-6 transition-transform duration-200 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transform-none motion-reduce:translate-none motion-reduce:group-hover:translate-none motion-reduce:group-focus-visible:translate-none" />
           </ButtonLink>
         </div>

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { ArticleBody } from "@/components/blog/article-body";
 import { MostVisited } from "@/components/blog/most-visited";
 import { PostCard } from "@/components/blog/post-card";
@@ -16,13 +14,10 @@ import {
   getPosts,
   getRelatedPosts,
 } from "@/lib/blog/get-posts";
-import type { BlogCopy, Tag } from "@/lib/blog/types";
 
 type ArticlePageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export const instant = false;
 
 export async function generateStaticParams() {
   const posts = await getPosts();
@@ -39,14 +34,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     title: post.title,
     description: post.excerpt,
   };
-}
-
-async function postUrl(slug: string): Promise<string> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
-  return `${protocol}://${host}/blog/${slug}`;
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
@@ -83,23 +70,25 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <li className="text-placeholder" aria-hidden="true">
               /
             </li>
-            <li className="text-muted">{post.title}</li>
+            <li className="text-muted" aria-current="page">
+              {post.title}
+            </li>
           </ol>
         </nav>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_12.5rem] lg:items-start">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_--spacing(50)] lg:items-start">
           <article>
-            <h1 className="text-[2rem] leading-tight font-semibold tracking-[0.01em] text-ink lg:text-headline">
+            <h1 className="text-[2.25rem] leading-[1.15] font-semibold tracking-[0.01em] text-ink lg:text-headline">
               {post.title}
             </h1>
             <div className="mt-6 flex flex-wrap items-center text-label font-semibold">
-              <p className="border-placeholder px-2.5 py-2.5 text-saffron sm:border-r">
+              <p className="border-r border-placeholder px-2.5 py-2.5 text-saffron">
                 {post.author}
               </p>
-              <p className="border-placeholder px-2.5 py-2.5 text-saffron sm:border-r">
+              <p className="border-r border-placeholder px-2.5 py-2.5 text-saffron">
                 {post.category.label}
               </p>
-              <p className="px-2.5 py-2.5 text-muted">
+              <p className="border-r border-placeholder px-2.5 py-2.5 text-muted">
                 <RelativeTime dateTime={post.publishedAt} />
               </p>
             </div>
@@ -117,9 +106,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <ArticleBody blocks={post.body} />
             </div>
             <div className="mt-10">
-              <Suspense fallback={null}>
-                <ArticleShare slug={post.slug} title={post.title} tags={post.tags} copy={copy} />
-              </Suspense>
+              <ShareRow
+                path={`/blog/${post.slug}`}
+                title={post.title}
+                tags={post.tags}
+                copy={copy}
+              />
             </div>
           </article>
           <MostVisited heading={copy.mostVisitedHeading} posts={mostVisited} />
@@ -129,14 +121,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <section aria-labelledby="related-posts-title" className="mt-16 lg:mt-20">
             <h2
               id="related-posts-title"
-              className="text-[2rem] leading-tight font-semibold tracking-[0.01em] text-ink-soft lg:text-headline"
+              className="text-[2.25rem] leading-[1.15] font-semibold tracking-[0.01em] text-ink-soft lg:text-headline"
             >
               {copy.relatedHeading}
             </h2>
             <ul className="mt-6 grid gap-6 lg:grid-cols-3 lg:gap-10">
               {related.map((item) => (
                 <li key={item.id}>
-                  <PostCard post={item} learnMoreLabel={copy.learnMoreLabel} />
+                  <PostCard post={item} learnMoreLabel={copy.learnMoreLabel} showExcerpt={false} />
                 </li>
               ))}
             </ul>
@@ -145,19 +137,4 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       </div>
     </div>
   );
-}
-
-async function ArticleShare({
-  slug,
-  title,
-  tags,
-  copy,
-}: {
-  slug: string;
-  title: string;
-  tags: readonly Tag[];
-  copy: BlogCopy;
-}) {
-  const url = await postUrl(slug);
-  return <ShareRow url={url} title={title} tags={tags} copy={copy} />;
 }

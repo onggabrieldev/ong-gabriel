@@ -11,7 +11,7 @@ export function SuggestCta({ copy }: SuggestCtaProps) {
       <div className="mx-auto flex max-w-360 flex-col items-center gap-3 px-4 py-16 text-center lg:px-20 lg:py-20">
         <h2
           id="blog-suggest-title"
-          className="text-[2rem] leading-tight font-semibold tracking-[0.01em] text-ink lg:text-headline"
+          className="text-[2.25rem] leading-[1.15] font-semibold tracking-[0.01em] text-ink lg:text-headline"
         >
           {copy.suggestTitle}
         </h2>

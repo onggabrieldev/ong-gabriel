@@ -1,7 +1,9 @@
 import { blogCopy, posts } from "@/lib/blog/content";
 import type { BlogCopy, Post, PostFilters } from "@/lib/blog/types";
 
-function firstString(value: string | undefined): string {
+// Each getter is the seam for the API. Swap the body for a fetch and keep the signature.
+
+function trimmed(value: string | undefined): string {
   return value?.trim() ?? "";
 }
 
@@ -50,8 +52,8 @@ export async function getBlogCopy(): Promise<BlogCopy> {
 }
 
 export async function getPosts(filters: PostFilters = {}): Promise<readonly Post[]> {
-  const query = firstString(filters.query);
-  const categorySlug = firstString(filters.categorySlug);
+  const query = trimmed(filters.query);
+  const categorySlug = trimmed(filters.categorySlug);
 
   return posts
     .filter((post) => (categorySlug.length === 0 ? true : post.category.slug === categorySlug))

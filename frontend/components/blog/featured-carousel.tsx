@@ -6,14 +6,18 @@ import { ArrowRightIcon } from "@/components/icons/icon";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { BlogCopy, Post } from "@/lib/blog/types";
 
+type FeaturedCarouselCopy = Pick<
+  BlogCopy,
+  "featuredRegionLabel" | "readPostLabel" | "previousPostLabel" | "nextPostLabel"
+>;
+
 type FeaturedCarouselProps = {
   posts: readonly Post[];
-  copy: BlogCopy;
+  copy: FeaturedCarouselCopy;
 };
 
 export function FeaturedCarousel({ posts, copy }: FeaturedCarouselProps) {
   const labelId = useId();
-  const statusId = useId();
   const [index, setIndex] = useState(0);
 
   if (posts.length === 0) {
@@ -49,19 +53,17 @@ export function FeaturedCarousel({ posts, copy }: FeaturedCarouselProps) {
         <h2 id={labelId} className="sr-only">
           {copy.featuredRegionLabel}
         </h2>
-        <p id={statusId} role="status" className="sr-only">
-          {current.title}
-        </p>
         <div className="relative overflow-hidden rounded-xl bg-canvas shadow-card">
-          <article aria-labelledby={`${labelId}-title`} className="grid lg:grid-cols-2">
+          <article
+            aria-roledescription="slide"
+            aria-label={`${index + 1} de ${posts.length}`}
+            className="grid lg:grid-cols-2"
+          >
             <div className="flex flex-col justify-center gap-5 px-6 py-10 lg:px-8 lg:py-20 lg:pb-24">
               <p className="w-fit rounded-full bg-sky px-3 py-1 text-sm text-ink-soft">
                 {current.category.label}
               </p>
-              <h3
-                id={`${labelId}-title`}
-                className="text-[2rem] leading-tight font-semibold tracking-[0.01em] text-ink lg:text-headline"
-              >
+              <h3 className="text-[2.25rem] leading-[1.15] font-semibold tracking-[0.01em] text-ink lg:text-headline">
                 {current.title}
               </h3>
               <p className="max-w-xl text-body text-muted">{current.excerpt}</p>
@@ -86,7 +88,7 @@ export function FeaturedCarousel({ posts, copy }: FeaturedCarouselProps) {
               <button
                 type="button"
                 onClick={() => goTo(index - 1)}
-                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-navy transition-colors hover:bg-sky"
+                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-navy transition-colors hover:bg-sky-deep hover:text-soil"
               >
                 <ArrowRightIcon className="size-6 rotate-180" />
                 <span className="sr-only">{copy.previousPostLabel}</span>
@@ -101,17 +103,21 @@ export function FeaturedCarousel({ posts, copy }: FeaturedCarouselProps) {
                       aria-label={post.title}
                       aria-current={currentSlide ? true : undefined}
                       onClick={() => goTo(slide)}
-                      className={`size-3 cursor-pointer rounded-full transition-colors ${
-                        currentSlide ? "bg-muted" : "bg-line hover:bg-placeholder"
-                      }`}
-                    />
+                      className="group inline-flex size-6 cursor-pointer items-center justify-center rounded-full"
+                    >
+                      <span
+                        className={`size-3 rounded-full transition-colors ${
+                          currentSlide ? "bg-muted" : "bg-line group-hover:bg-placeholder"
+                        }`}
+                      />
+                    </button>
                   );
                 })}
               </div>
               <button
                 type="button"
                 onClick={() => goTo(index + 1)}
-                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-navy transition-colors hover:bg-sky"
+                className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-navy transition-colors hover:bg-sky-deep hover:text-soil"
               >
                 <ArrowRightIcon className="size-6" />
                 <span className="sr-only">{copy.nextPostLabel}</span>

@@ -35,13 +35,14 @@ export function EventCard({ event, detailsLabel }: EventCardProps) {
   return (
     <article className="flex h-full flex-col gap-4 rounded-xl border border-line bg-canvas px-4 py-5">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-        <div
+        <time
+          dateTime={event.startsAt}
           className={`flex min-w-32 flex-col items-center justify-center gap-2 rounded-lg px-4 py-3.5 sm:max-w-50 ${accentClasses[event.accent]}`}
         >
           <p className="text-[2rem] leading-none font-extrabold tracking-[0.01em]">{day}</p>
           <p className="text-sm font-medium uppercase">{month}</p>
-          <p className="text-xs text-muted">{time}</p>
-        </div>
+          <p className="text-xs text-ink-soft">{time}</p>
+        </time>
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
           <p className="w-fit rounded-full bg-line px-1.75 py-0.75 text-sm text-ink-soft">
             {event.type.label}
@@ -59,6 +60,7 @@ export function EventCard({ event, detailsLabel }: EventCardProps) {
           className="inline-flex h-10 cursor-pointer items-center rounded-full px-4 text-label font-semibold text-navy transition-colors hover:bg-sky hover:underline"
         >
           {detailsLabel}
+          <span className="sr-only">: {event.title}</span>
         </Link>
       </div>
     </article>
