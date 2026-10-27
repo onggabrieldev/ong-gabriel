@@ -14,7 +14,7 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <article className="h-full overflow-hidden rounded-xl border border-line bg-canvas shadow-card transition-shadow hover:shadow-photo">
       <Link
-        href={`/agenda/galeria/${event.slug}`}
+        href={`/galeria/${event.slug}`}
         className="flex h-full flex-col transition-colors hover:bg-sky"
       >
         <Image

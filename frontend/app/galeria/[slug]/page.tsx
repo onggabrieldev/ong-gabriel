@@ -6,7 +6,7 @@ import { PhotoGallery } from "@/components/gallery/photo-gallery";
 import { getPastEvent, getPastEvents } from "@/lib/events/get-events";
 import { getGalleryPage } from "@/lib/gallery/get-gallery-page";
 
-type GalleryEventPageProps = PageProps<"/agenda/galeria/[slug]">;
+type GalleryEventPageProps = PageProps<"/galeria/[slug]">;
 
 // Blocking: notFound() must run before the PPR shell streams. HTTP status stays a soft 404.
 export const instant = false;

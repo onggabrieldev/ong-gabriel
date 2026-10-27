@@ -110,7 +110,7 @@ function GalleryEventsView({
       params.set(locationParam, next.localizacao);
     }
     const query = params.toString();
-    router.push(query ? `/agenda/galeria?${query}` : "/agenda/galeria", { scroll: false });
+    router.push(query ? `/galeria?${query}` : "/galeria", { scroll: false });
   }
 
   return (

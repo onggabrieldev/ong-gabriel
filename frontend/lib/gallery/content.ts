@@ -8,7 +8,7 @@ export const galleryPageContent = {
   breadcrumb: {
     navLabel: "Trilha de navegação",
     agenda: { label: "Agenda", href: "/agenda" },
-    gallery: { label: "Galeria", href: "/agenda/galeria" },
+    gallery: { label: "Galeria", href: "/galeria" },
   },
   filters: {
     type: { label: "Tipo de evento", placeholder: "Selecione" },
