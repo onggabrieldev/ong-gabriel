@@ -19,6 +19,9 @@ type ArticlePageProps = {
   params: Promise<{ slug: string }>;
 };
 
+// The page reads params and calls notFound() for unknown slugs, so it blocks on purpose.
+export const instant = false;
+
 export async function generateStaticParams() {
   const posts = await getPosts();
   return posts.map((post) => ({ slug: post.slug }));
@@ -125,7 +128,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             >
               {copy.relatedHeading}
             </h2>
-            <ul className="mt-6 grid gap-6 lg:grid-cols-3 lg:gap-10">
+            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
               {related.map((item) => (
                 <li key={item.id}>
                   <PostCard post={item} learnMoreLabel={copy.learnMoreLabel} showExcerpt={false} />

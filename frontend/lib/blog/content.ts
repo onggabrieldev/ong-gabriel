@@ -164,10 +164,12 @@ export const posts = [
 ] as const satisfies readonly Post[];
 
 export const blogCopy = {
+  pageHeading: "Blog",
   featuredRegionLabel: "Publicações em destaque",
   readPostLabel: "Ler publicação",
   previousPostLabel: "Publicação anterior",
   nextPostLabel: "Próxima publicação",
+  slidePositionLabel: "de",
   latestHeading: "Últimas publicações",
   searchPlaceholder: "Pesquise no blog",
   searchLabel: "Pesquise no blog",

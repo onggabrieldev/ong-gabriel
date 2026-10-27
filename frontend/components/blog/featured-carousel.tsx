@@ -8,7 +8,11 @@ import type { BlogCopy, Post } from "@/lib/blog/types";
 
 type FeaturedCarouselCopy = Pick<
   BlogCopy,
-  "featuredRegionLabel" | "readPostLabel" | "previousPostLabel" | "nextPostLabel"
+  | "featuredRegionLabel"
+  | "readPostLabel"
+  | "previousPostLabel"
+  | "nextPostLabel"
+  | "slidePositionLabel"
 >;
 
 type FeaturedCarouselProps = {
@@ -56,7 +60,8 @@ export function FeaturedCarousel({ posts, copy }: FeaturedCarouselProps) {
         <div className="relative overflow-hidden rounded-xl bg-canvas shadow-card">
           <article
             aria-roledescription="slide"
-            aria-label={`${index + 1} de ${posts.length}`}
+            aria-live="polite"
+            aria-label={`${index + 1} ${copy.slidePositionLabel} ${posts.length}`}
             className="grid lg:grid-cols-2"
           >
             <div className="flex flex-col justify-center gap-5 px-6 py-10 lg:px-8 lg:py-20 lg:pb-24">

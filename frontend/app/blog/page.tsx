@@ -30,6 +30,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <>
+      <h1 className="sr-only">{copy.pageHeading}</h1>
       <FeaturedCarousel
         posts={featured}
         copy={{
@@ -37,6 +38,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           readPostLabel: copy.readPostLabel,
           previousPostLabel: copy.previousPostLabel,
           nextPostLabel: copy.nextPostLabel,
+          slidePositionLabel: copy.slidePositionLabel,
         }}
       />
       <Suspense fallback={<LatestPostsFallback copy={copy} categories={categories} />}>

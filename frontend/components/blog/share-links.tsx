@@ -59,7 +59,7 @@ export function ShareLinks({
       {shares.map((share) => (
         <li key={share.id}>
           <a
-            href={share.href}
+            href={origin ? share.href : undefined}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex size-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-sky hover:text-soil"

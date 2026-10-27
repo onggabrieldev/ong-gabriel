@@ -39,9 +39,9 @@ export function EventCard({ event, detailsLabel }: EventCardProps) {
           dateTime={event.startsAt}
           className={`flex min-w-32 flex-col items-center justify-center gap-2 rounded-lg px-4 py-3.5 sm:max-w-50 ${accentClasses[event.accent]}`}
         >
-          <p className="text-[2rem] leading-none font-extrabold tracking-[0.01em]">{day}</p>
-          <p className="text-sm font-medium uppercase">{month}</p>
-          <p className="text-xs text-ink-soft">{time}</p>
+          <span className="text-[2rem] leading-none font-extrabold tracking-[0.01em]">{day}</span>
+          <span className="text-sm font-medium uppercase">{month}</span>
+          <span className="text-xs text-ink-soft">{time}</span>
         </time>
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
           <p className="w-fit rounded-full bg-line px-1.75 py-0.75 text-sm text-ink-soft">

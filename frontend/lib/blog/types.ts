@@ -54,10 +54,12 @@ export type PostFilters = {
 };
 
 export type BlogCopy = {
+  pageHeading: string;
   featuredRegionLabel: string;
   readPostLabel: string;
   previousPostLabel: string;
   nextPostLabel: string;
+  slidePositionLabel: string;
   latestHeading: string;
   searchPlaceholder: string;
   searchLabel: string;
