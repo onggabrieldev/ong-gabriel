@@ -9,10 +9,19 @@ function toIcsUtc(iso: string): string {
   return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
 }
 
+function stripIcsControls(value: string): string {
+  let result = "";
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    if (code === 9 || (code >= 32 && code !== 127)) {
+      result += char;
+    }
+  }
+  return result;
+}
+
 function escapeIcs(value: string): string {
-  return value
-    .replace(/\\/g, "\\\\")
-    .replace(/\n/g, "\\n")
+  return stripIcsControls(value.replace(/\\/g, "\\\\").replace(/\r\n|\r|\n/g, "\\n"))
     .replace(/;/g, "\\;")
     .replace(/,/g, "\\,");
 }
@@ -68,5 +77,7 @@ export function downloadEventIcs(event: UpcomingEvent): void {
   document.body.append(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 0);
 }

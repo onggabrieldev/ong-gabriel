@@ -2,6 +2,7 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
+// Follow-up: move these icons into components/icons/icon.tsx when that path is in scope.
 function Svg({ children, ...props }: IconProps) {
   return (
     <svg
@@ -80,9 +81,9 @@ export function SuccessIcon(props: IconProps) {
 export function AlertIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" {...props}>
-      <circle cx="12" cy="12" r="9" fill="currentColor" className="text-alert" />
-      <path d="M12 7.5v6" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="12" cy="16.4" r="1" fill="white" />
+      <circle cx="12" cy="12" r="9" fill="currentColor" />
+      <path d="M12 7.5v6" className="stroke-canvas" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="16.4" r="1" className="fill-canvas" />
     </svg>
   );
 }

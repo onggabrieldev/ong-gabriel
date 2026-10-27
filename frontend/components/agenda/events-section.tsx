@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { arrowMotionClass } from "@/components/agenda/agenda-icons";
 import { downloadEventIcs } from "@/components/agenda/download-ics";
 import { EventCard } from "@/components/agenda/event-card";
@@ -12,6 +12,7 @@ import { filterUpcomingEvents } from "@/components/agenda/format-event";
 import { ArrowRightIcon } from "@/components/icons/icon";
 import { useCloseOnBackdrop } from "@/components/ui/close-on-backdrop";
 import type {
+  AgendaAppliedFilters,
   AgendaEventsCopy,
   AgendaRegistrationCopy,
   AgendaStatusCopy,
@@ -26,24 +27,12 @@ type EventsSectionProps = {
   copy: AgendaEventsCopy;
   registration: AgendaRegistrationCopy;
   status: AgendaStatusCopy;
+  initialFilters: AgendaAppliedFilters;
 };
 
 type DialogKind = "details" | "registration" | "success" | "error" | null;
 
-type FilterDraft = {
-  tipo: string;
-  local: string;
-  periodo: string;
-};
-
-const emptyFilters: FilterDraft = { tipo: "", local: "", periodo: "" };
-
-function readParam(value: string | null, allowed: readonly { id: string }[]): string {
-  if (!value) {
-    return "";
-  }
-  return allowed.some((option) => option.id === value) ? value : "";
-}
+const emptyFilters: AgendaAppliedFilters = { tipo: "", local: "", periodo: "" };
 
 function FilterSelect({
   id,
@@ -103,10 +92,10 @@ export function EventsSection({
   copy,
   registration,
   status,
+  initialFilters,
 }: EventsSectionProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const formId = useId();
   const detailsId = useId();
   const registrationId = useId();
@@ -121,21 +110,19 @@ export function EventsSection({
   useCloseOnBackdrop(registrationRef);
   useCloseOnBackdrop(statusRef);
 
-  const appliedTipo = readParam(searchParams.get("tipo"), types);
-  const appliedLocal = readParam(searchParams.get("local"), locations);
-  const appliedPeriodo = readParam(searchParams.get("periodo"), periods);
-  const applied = useMemo<FilterDraft>(
-    () => ({ tipo: appliedTipo, local: appliedLocal, periodo: appliedPeriodo }),
-    [appliedTipo, appliedLocal, appliedPeriodo],
-  );
-
-  const [draft, setDraft] = useState<FilterDraft>(applied);
+  const appliedTipo = initialFilters.tipo;
+  const appliedLocal = initialFilters.local;
+  const appliedPeriodo = initialFilters.periodo;
+  const [draft, setDraft] = useState<AgendaAppliedFilters>(initialFilters);
+  const [applied, setApplied] = useState<AgendaAppliedFilters>(initialFilters);
   const [expanded, setExpanded] = useState(false);
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [activeEvent, setActiveEvent] = useState<UpcomingEvent | null>(null);
 
   useEffect(() => {
-    setDraft({ tipo: appliedTipo, local: appliedLocal, periodo: appliedPeriodo });
+    const next = { tipo: appliedTipo, local: appliedLocal, periodo: appliedPeriodo };
+    setDraft(next);
+    setApplied(next);
   }, [appliedTipo, appliedLocal, appliedPeriodo]);
 
   useEffect(() => {
@@ -188,7 +175,7 @@ export function EventsSection({
   });
   const visible = expanded ? filtered : filtered.slice(0, copy.initialCount);
 
-  function writeFilters(next: FilterDraft) {
+  function writeFilters(next: AgendaAppliedFilters) {
     const params = new URLSearchParams();
     if (next.tipo) {
       params.set("tipo", next.tipo);
@@ -200,6 +187,7 @@ export function EventsSection({
       params.set("periodo", next.periodo);
     }
     const query = params.toString();
+    setApplied(next);
     setExpanded(false);
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }
@@ -274,11 +262,13 @@ export function EventsSection({
           <h2 id="upcoming-events-title" className="text-title font-bold text-ink">
             {copy.heading}
           </h2>
-          {filtered.length === 0 ? (
-            <p role="status" className="text-body text-text">
-              {copy.emptyMessage}
-            </p>
-          ) : (
+          <p
+            role="status"
+            className={`text-body text-text ${filtered.length === 0 ? "" : "sr-only"}`}
+          >
+            {filtered.length === 0 ? copy.emptyMessage : ""}
+          </p>
+          {filtered.length > 0 ? (
             <ul className="flex flex-col gap-11">
               {visible.map((event) => (
                 <li key={event.id}>
@@ -294,7 +284,7 @@ export function EventsSection({
                 </li>
               ))}
             </ul>
-          )}
+          ) : null}
           {filtered.length > copy.initialCount && !expanded ? (
             <div className="flex justify-end">
               <button

@@ -1,5 +1,19 @@
 import type { EventAccent, UpcomingEvent } from "@/lib/events/types";
 
+export function firstSearchParam(value: string | string[] | undefined): string | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+  return value ?? null;
+}
+
+export function readParam(value: string | null, allowed: readonly { id: string }[]): string {
+  if (!value) {
+    return "";
+  }
+  return allowed.some((option) => option.id === value) ? value : "";
+}
+
 export const agendaTimeZone = "America/Sao_Paulo";
 
 const dateTimeFormat: Intl.DateTimeFormatOptions = {
@@ -8,7 +22,7 @@ const dateTimeFormat: Intl.DateTimeFormatOptions = {
   month: "short",
   hour: "2-digit",
   minute: "2-digit",
-  hour12: false,
+  hourCycle: "h23",
 };
 
 export type EventDateParts = {

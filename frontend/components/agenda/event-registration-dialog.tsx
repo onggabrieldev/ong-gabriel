@@ -1,9 +1,9 @@
 "use client";
 
-import { type FormEvent, type RefObject, useId, useState } from "react";
+import { type FormEvent, type RefObject, useId, useRef, useState } from "react";
 import { formatEventDate } from "@/components/agenda/format-event";
 import { CloseIcon } from "@/components/icons/icon";
-import { submitRegistration } from "@/lib/agenda/get-agenda-page";
+import { submitRegistration } from "@/lib/agenda/submit-registration";
 import type {
   AgendaFieldId,
   AgendaRegistrationCopy,
@@ -47,6 +47,7 @@ export function EventRegistrationDialog({
   onClose,
 }: EventRegistrationDialogProps) {
   const formId = useId();
+  const closingForResult = useRef(false);
   const [values, setValues] = useState<FormValues>(emptyValues);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [wantsUpdates, setWantsUpdates] = useState(false);
@@ -84,6 +85,15 @@ export function EventRegistrationDialog({
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
+      const firstField = copy.fields.find((field) => nextErrors[field.id]);
+      const targetId = firstField
+        ? `${formId}-${firstField.id}`
+        : nextErrors.terms
+          ? `${formId}-terms`
+          : undefined;
+      if (targetId) {
+        document.getElementById(targetId)?.focus();
+      }
       return;
     }
 
@@ -98,11 +108,13 @@ export function EventRegistrationDialog({
     setSubmitting(true);
     try {
       const result = await submitRegistration(event.id, payload);
+      closingForResult.current = true;
       if (result.ok) {
         resetForm();
       }
       onResult(result.ok);
     } catch {
+      closingForResult.current = true;
       onResult(false);
     } finally {
       setSubmitting(false);
@@ -114,9 +126,12 @@ export function EventRegistrationDialog({
       ref={dialogRef}
       id={dialogId}
       aria-labelledby={titleId}
-      className="max-h-[min(90vh,--spacing(200))] w-[min(100%,--spacing(120))] overflow-y-auto rounded-xl bg-cream text-text"
+      className="max-h-[min(90vh,--spacing(200))] w-[min(100%,--spacing(150))] overflow-y-auto rounded-xl bg-cream text-text"
       onClose={() => {
-        resetForm();
+        if (!closingForResult.current) {
+          resetForm();
+        }
+        closingForResult.current = false;
         onClose();
       }}
     >
@@ -183,6 +198,7 @@ export function EventRegistrationDialog({
         <div className="flex flex-col gap-3">
           <label className="flex cursor-pointer items-center gap-2 p-2 text-xs text-text">
             <input
+              id={`${formId}-terms`}
               type="checkbox"
               checked={acceptedTerms}
               aria-invalid={errors.terms ? true : undefined}

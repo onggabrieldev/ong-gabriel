@@ -25,6 +25,40 @@ export function PastEventsSection({ gallery, events }: PastEventsSectionProps) {
             {gallery.heading}
           </h2>
           <p className="text-body text-muted">{gallery.summary}</p>
+        </div>
+        {preview.length > 0 ? (
+          <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-14">
+            {preview.map((event) => (
+              <li key={event.id}>
+                <article className="flex h-full flex-col overflow-hidden rounded-xl bg-canvas shadow-card">
+                  <Image
+                    src={event.cover.src}
+                    alt={event.cover.alt}
+                    width={event.cover.width}
+                    height={event.cover.height}
+                    sizes="(min-width: 64rem) 24rem, 100vw"
+                    className="h-48 w-full object-cover"
+                  />
+                  <div className="flex flex-1 flex-col gap-4 px-6 py-6.5">
+                    <p className="text-body text-muted">{formatPastEventDate(event.heldOn)}</p>
+                    <h3 className="text-title font-bold text-ink">{event.title}</h3>
+                    <p className="text-body text-muted">{event.summary}</p>
+                    <div className="mt-auto flex justify-end">
+                      <Link
+                        href={`/agenda/galeria/${event.slug}`}
+                        className="group inline-flex h-10 items-center justify-center gap-1.5 rounded-full px-4 text-label font-semibold text-navy transition-colors hover:text-soil hover:underline"
+                      >
+                        {gallery.cardActionLabel}
+                        <ArrowRightIcon className={arrowMotionClass} />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <div className="flex justify-center">
           <Link
             href={gallery.action.href}
             className="group inline-flex items-center gap-1.5 text-label font-semibold text-navy transition-colors hover:text-soil hover:underline"
@@ -33,36 +67,6 @@ export function PastEventsSection({ gallery, events }: PastEventsSectionProps) {
             <ArrowRightIcon className={arrowMotionClass} />
           </Link>
         </div>
-        <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-14">
-          {preview.map((event) => (
-            <li key={event.id}>
-              <article className="flex h-full flex-col overflow-hidden rounded-xl bg-canvas shadow-card">
-                <Image
-                  src={event.cover.src}
-                  alt={event.cover.alt}
-                  width={event.cover.width}
-                  height={event.cover.height}
-                  sizes="(min-width: 64rem) 24rem, 100vw"
-                  className="h-48 w-full object-cover"
-                />
-                <div className="flex flex-1 flex-col gap-4 px-6 py-6.5">
-                  <p className="text-body text-muted">{formatPastEventDate(event.heldOn)}</p>
-                  <h3 className="text-title font-bold text-ink">{event.title}</h3>
-                  <p className="text-body text-muted">{event.summary}</p>
-                  <div className="mt-auto flex justify-end">
-                    <Link
-                      href={`/agenda/galeria/${event.slug}`}
-                      className="group inline-flex h-10 items-center justify-center gap-1.5 rounded-full px-4 text-label font-semibold text-navy transition-colors hover:text-soil hover:underline"
-                    >
-                      {gallery.cardActionLabel}
-                      <ArrowRightIcon className={arrowMotionClass} />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

@@ -50,6 +50,7 @@ export const agendaPageContent: AgendaPageContent = {
     terms: {
       prefix: "Li e aceito os termos de ",
       linkLabel: "política e privacidade de dados",
+      // Placeholder until the privacy page exists.
       href: "#politica-de-privacidade",
       requiredMessage: "Aceite os termos para continuar.",
     },

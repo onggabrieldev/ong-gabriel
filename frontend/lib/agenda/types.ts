@@ -14,6 +14,12 @@ export type AgendaFilterCopy = {
   clearLabel: string;
 };
 
+export type AgendaAppliedFilters = {
+  tipo: string;
+  local: string;
+  periodo: string;
+};
+
 export type AgendaEventsCopy = {
   heading: string;
   moreLabel: string;

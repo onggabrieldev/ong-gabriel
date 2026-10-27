@@ -38,7 +38,7 @@ export function EventStatusDialog({
       ref={dialogRef}
       id={dialogId}
       aria-labelledby={titleId}
-      className="max-h-[min(90vh,--spacing(200))] w-[min(100%,--spacing(120))] overflow-y-auto rounded-xl bg-cream text-text"
+      className="max-h-[min(90vh,--spacing(200))] w-[min(100%,--spacing(150))] overflow-y-auto rounded-xl bg-cream text-text"
       onClose={onClose}
     >
       <form method="dialog" className="flex justify-end px-4 py-2.5">
@@ -62,8 +62,9 @@ export function EventStatusDialog({
           )}
         </div>
         <div role="status" className="flex w-full flex-col gap-3 text-body text-text">
-          {(isSuccess ? copy.successBody : copy.errorBody).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {(isSuccess ? copy.successBody : copy.errorBody).map((paragraph, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: status copy can repeat
+            <p key={index}>{paragraph}</p>
           ))}
         </div>
         {isSuccess ? (

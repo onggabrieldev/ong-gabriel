@@ -75,8 +75,9 @@ export function EventDetailsDialog({
             <p>{event.location.label}</p>
           </div>
           <div className="flex flex-col gap-3 text-body text-text">
-            {event.description.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {event.description.map((paragraph, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: API paragraphs can repeat
+              <p key={index}>{paragraph}</p>
             ))}
           </div>
           <div className="flex flex-col gap-5 sm:flex-row">
