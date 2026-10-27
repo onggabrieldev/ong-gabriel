@@ -77,7 +77,7 @@ export const agendaPageContent: AgendaPageContent = {
   gallery: {
     heading: "Galeria de Eventos Passados",
     summary: "Confira alguns momentos especiais dos nossos eventos anteriores",
-    action: { label: "Ver galeria", href: "/agenda/galeria" },
+    action: { label: "Ver galeria", href: "/galeria" },
     cardActionLabel: "Ver galeria",
   },
   outreach: {

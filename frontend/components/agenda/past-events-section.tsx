@@ -45,7 +45,7 @@ export function PastEventsSection({ gallery, events }: PastEventsSectionProps) {
                     <p className="text-body text-muted">{event.summary}</p>
                     <div className="mt-auto flex justify-end">
                       <Link
-                        href={`/agenda/galeria/${event.slug}`}
+                        href={`/galeria/${event.slug}`}
                         className="group inline-flex h-10 items-center justify-center gap-1.5 rounded-full px-4 text-label font-semibold text-navy transition-colors hover:text-soil hover:underline"
                       >
                         {gallery.cardActionLabel}
