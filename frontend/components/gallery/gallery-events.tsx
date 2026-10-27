@@ -41,13 +41,21 @@ function filterEvents(events: readonly PastEvent[], filters: GalleryFilterValues
   });
 }
 
+function filtersEqual(a: GalleryFilterValues, b: GalleryFilterValues): boolean {
+  return a.tipo === b.tipo && a.localizacao === b.localizacao;
+}
+
 function listStatus(
   events: readonly PastEvent[],
   filters: GalleryFilterValues,
   copy: GalleryListCopy,
 ): string {
   const count = filterEvents(events, filters).length;
-  return count === 0 ? copy.empty : `${count} ${copy.resultCount}`;
+  if (count === 0) {
+    return copy.empty;
+  }
+  const label = count === 1 ? copy.resultCountOne : copy.resultCount;
+  return `${count} ${label}`;
 }
 
 function GalleryStatus({ text }: { text: string }) {
@@ -58,16 +66,30 @@ function GalleryStatus({ text }: { text: string }) {
   );
 }
 
+function writeFilterQuery(next: GalleryFilterValues): string {
+  const params = new URLSearchParams();
+  if (next.tipo) {
+    params.set(typeParam, next.tipo);
+  }
+  if (next.localizacao) {
+    params.set(locationParam, next.localizacao);
+  }
+  return params.toString();
+}
+
 export function GalleryEventsFallback(props: GalleryEventsProps) {
   return (
-    <>
-      <GalleryStatus text={listStatus(props.events, emptyFilters, props.listCopy)} />
-      <GalleryEventsView {...props} applied={emptyFilters} />
-    </>
+    <GalleryEventsShell
+      {...props}
+      applied={emptyFilters}
+      draft={emptyFilters}
+      onDraftChange={() => {}}
+    />
   );
 }
 
 export function GalleryEvents(props: GalleryEventsProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const typeIds = props.types.map((type) => type.id);
   const locationIds = props.locations.map((location) => location.id);
@@ -75,63 +97,92 @@ export function GalleryEvents(props: GalleryEventsProps) {
     tipo: readParam(searchParams.get(typeParam), typeIds),
     localizacao: readParam(searchParams.get(locationParam), locationIds),
   };
+  const [draft, setDraft] = useState<GalleryFilterValues>(applied);
+  const [prevApplied, setPrevApplied] = useState(applied);
+  if (!filtersEqual(applied, prevApplied)) {
+    setPrevApplied(applied);
+    setDraft(applied);
+  }
+
+  function writeFilters(next: GalleryFilterValues) {
+    const query = writeFilterQuery(next);
+    router.push(query ? `/galeria?${query}` : "/galeria", { scroll: false });
+  }
+
   return (
-    <>
-      <GalleryStatus text={listStatus(props.events, applied, props.listCopy)} />
-      <GalleryEventsView
-        key={`${applied.tipo}|${applied.localizacao}`}
-        {...props}
-        applied={applied}
-      />
-    </>
+    <GalleryEventsShell
+      {...props}
+      applied={applied}
+      draft={draft}
+      onDraftChange={setDraft}
+      onWrite={writeFilters}
+    />
   );
 }
 
-function GalleryEventsView({
+function GalleryEventsShell({
   events,
   types,
   locations,
   filtersCopy,
   listCopy,
   applied,
-}: GalleryEventsProps & { applied: GalleryFilterValues }) {
-  const router = useRouter();
-  const [draft, setDraft] = useState<GalleryFilterValues>(applied);
-  const filtered = filterEvents(events, applied);
-  const { listRef, visibleCount, hasMore, revealMore } = useRevealMore(pageSize, filtered.length);
-  const visible = filtered.slice(0, visibleCount);
-
-  function writeFilters(next: GalleryFilterValues) {
-    const params = new URLSearchParams();
-    if (next.tipo) {
-      params.set(typeParam, next.tipo);
-    }
-    if (next.localizacao) {
-      params.set(locationParam, next.localizacao);
-    }
-    const query = params.toString();
-    router.push(query ? `/galeria?${query}` : "/galeria", { scroll: false });
-  }
-
+  draft,
+  onDraftChange,
+  onWrite,
+}: GalleryEventsProps & {
+  applied: GalleryFilterValues;
+  draft: GalleryFilterValues;
+  onDraftChange: (values: GalleryFilterValues) => void;
+  onWrite?: (values: GalleryFilterValues) => void;
+}) {
   return (
     <div>
+      <GalleryStatus text={listStatus(events, applied, listCopy)} />
       <EventFilters
         copy={filtersCopy}
         types={types}
         locations={locations}
         values={draft}
-        onChange={setDraft}
-        onApply={() => writeFilters(draft)}
+        onChange={onDraftChange}
+        onApply={() => onWrite?.(draft)}
         onClear={() => {
-          setDraft(emptyFilters);
-          writeFilters(emptyFilters);
+          onDraftChange(emptyFilters);
+          onWrite?.(emptyFilters);
         }}
       />
+      <GalleryEventsList
+        key={`${applied.tipo}|${applied.localizacao}`}
+        events={events}
+        listCopy={listCopy}
+        applied={applied}
+      />
+    </div>
+  );
+}
 
+function GalleryEventsList({
+  events,
+  listCopy,
+  applied,
+}: {
+  events: readonly PastEvent[];
+  listCopy: GalleryListCopy;
+  applied: GalleryFilterValues;
+}) {
+  const filtered = filterEvents(events, applied);
+  const { listRef, visibleCount, hasMore, revealMore } = useRevealMore(pageSize, filtered.length);
+  const visible = filtered.slice(0, visibleCount);
+
+  return (
+    <>
       {filtered.length === 0 ? (
         <p className="py-16 text-center text-label text-muted">{listCopy.empty}</p>
       ) : (
-        <ul ref={listRef} className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:py-22.5">
+        <ul
+          ref={listRef}
+          className="grid grid-cols-1 gap-10 py-16 md:grid-cols-2 lg:grid-cols-3 lg:py-22.5"
+        >
           {visible.map((event) => (
             <li key={event.id}>
               <EventCard event={event} />
@@ -145,6 +196,6 @@ function GalleryEventsView({
           <LoadMoreButton onClick={revealMore}>{listCopy.loadMoreLabel}</LoadMoreButton>
         </div>
       ) : null}
-    </div>
+    </>
   );
 }

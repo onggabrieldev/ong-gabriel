@@ -37,13 +37,13 @@ export function EventFilters({
 
   return (
     <form
-      className="flex flex-col gap-6 py-6 lg:flex-row lg:flex-wrap lg:items-end"
+      className="flex flex-col gap-6 py-6 lg:flex-row lg:items-end"
       onSubmit={(event) => {
         event.preventDefault();
         onApply();
       }}
     >
-      <div className="flex w-full flex-col gap-0.5 lg:w-63.5">
+      <div className="flex w-full flex-col gap-0.5 lg:min-w-0 lg:flex-1 xl:w-63.5 xl:flex-none">
         <label htmlFor={typeId} className="text-label font-semibold text-text">
           {copy.type.label}
         </label>
@@ -63,7 +63,7 @@ export function EventFilters({
         </select>
       </div>
 
-      <div className="flex w-full flex-col gap-0.5 lg:w-63.5">
+      <div className="flex w-full flex-col gap-0.5 lg:min-w-0 lg:flex-1 xl:w-63.5 xl:flex-none">
         <label htmlFor={locationId} className="text-label font-semibold text-text">
           {copy.location.label}
         </label>
@@ -85,14 +85,14 @@ export function EventFilters({
 
       <button
         type="submit"
-        className="inline-flex h-10 w-full max-w-50 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
+        className="inline-flex h-10 w-full max-w-50 shrink-0 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep lg:w-auto lg:px-10"
       >
         {copy.applyLabel}
       </button>
       <button
         type="button"
         onClick={onClear}
-        className="inline-flex h-10 w-full max-w-50 cursor-pointer items-center justify-center rounded-full border border-text bg-canvas px-4 text-label font-semibold text-text transition-colors hover:bg-sky"
+        className="inline-flex h-10 w-full max-w-50 shrink-0 cursor-pointer items-center justify-center rounded-full border border-text bg-canvas px-4 text-label font-semibold text-text transition-colors hover:bg-sky lg:w-auto lg:px-10"
       >
         {copy.clearLabel}
       </button>

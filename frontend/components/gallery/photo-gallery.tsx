@@ -28,7 +28,8 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const visible = photos.slice(0, visibleCount);
   const current = openIndex === null ? null : photos[openIndex];
-  const listStatus = photos.length === 0 ? copy.empty : `${photos.length} ${copy.resultCount}`;
+  const countLabel = photos.length === 1 ? copy.resultCountOne : copy.resultCount;
+  const listStatus = photos.length === 0 ? copy.empty : `${photos.length} ${countLabel}`;
   useCloseOnBackdrop(dialogRef);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
         <>
           <ul
             ref={listRef}
-            className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:pt-34 lg:pb-22.5"
+            className="grid grid-cols-1 gap-10 py-16 md:grid-cols-2 lg:grid-cols-3 lg:pt-34 lg:pb-22.5"
           >
             {visible.map((photo, index) => {
               const label = photoLabel(photo, index, copy);
@@ -163,7 +164,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
                   width={current.width}
                   height={current.height}
                   sizes="(min-width: 64rem) 60rem, 100vw"
-                  className="max-h-[80vh] w-full object-contain"
+                  className="h-auto max-h-[80vh] w-full object-contain"
                 />
                 <button
                   type="button"

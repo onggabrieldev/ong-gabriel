@@ -44,7 +44,7 @@ export default async function GalleryEventPage({ params }: GalleryEventPageProps
         <div className="mx-auto max-w-360 px-4 py-10 lg:px-20">
           <Breadcrumb copy={page.breadcrumb} current={event.title} />
           <h2 id="gallery-photos-title" className="sr-only">
-            {page.photos.heading}
+            {page.photos.heading}: {event.title}
           </h2>
           <PhotoGallery photos={event.photos} copy={page.photos} />
         </div>
