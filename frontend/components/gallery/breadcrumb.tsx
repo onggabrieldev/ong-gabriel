@@ -27,9 +27,7 @@ export function Breadcrumb({ copy, current }: BreadcrumbProps) {
           <Link
             href={copy.gallery.href}
             aria-current={galleryIsCurrent ? "page" : undefined}
-            className={`font-medium transition-colors hover:underline ${
-              galleryIsCurrent ? "text-sky-mid" : "text-saffron hover:text-soil"
-            }`}
+            className="font-medium text-sky-mid transition-colors hover:text-soil hover:underline"
           >
             {copy.gallery.label}
           </Link>

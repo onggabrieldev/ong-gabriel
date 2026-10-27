@@ -11,7 +11,7 @@ export function DonationCta({ donation }: DonationCtaProps) {
   return (
     <section
       aria-labelledby="gallery-donation-title"
-      className="bg-linear-to-br from-sky-deep via-cream to-saffron-soft"
+      className="bg-linear-to-r from-sky-deep via-cream to-butter"
     >
       <div className="mx-auto flex max-w-360 flex-col items-center gap-10 px-4 py-16 lg:flex-row lg:items-center lg:gap-10 lg:px-20 lg:py-20">
         <div className="flex size-64 shrink-0 items-center justify-center overflow-hidden rounded-tl-[40%] rounded-tr-[40%] rounded-bl-[40%] lg:size-96">
@@ -31,7 +31,7 @@ export function DonationCta({ donation }: DonationCtaProps) {
           >
             {donation.title}
           </h2>
-          <div className="flex flex-col gap-1 text-label font-semibold text-text">
+          <div className="flex flex-col gap-1 text-label text-text">
             {donation.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

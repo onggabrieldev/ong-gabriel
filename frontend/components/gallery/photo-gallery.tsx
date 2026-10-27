@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@/components/gallery/icons";
-import { CloseIcon } from "@/components/icons/icon";
+import { LoadMoreButton } from "@/components/gallery/load-more-button";
+import { useRevealMore } from "@/components/gallery/use-reveal-more";
+import { ArrowRightIcon, CloseIcon } from "@/components/icons/icon";
 import { useCloseOnBackdrop } from "@/components/ui/close-on-backdrop";
 import type { GalleryPhotosCopy } from "@/lib/gallery/types";
 import type { MediaAsset } from "@/lib/home/types";
@@ -15,15 +16,19 @@ type PhotoGalleryProps = {
   copy: GalleryPhotosCopy;
 };
 
+function photoLabel(photo: MediaAsset, index: number, copy: GalleryPhotosCopy): string {
+  return photo.alt || `${copy.photoLabel} ${index + 1}`;
+}
+
 export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const dialogId = useId();
   const statusId = useId();
-  const [visibleCount, setVisibleCount] = useState(pageSize);
+  const { listRef, visibleCount, hasMore, revealMore } = useRevealMore(pageSize, photos.length);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const visible = photos.slice(0, visibleCount);
-  const hasMore = visibleCount < photos.length;
   const current = openIndex === null ? null : photos[openIndex];
+  const listStatus = photos.length === 0 ? copy.empty : `${photos.length} ${copy.resultCount}`;
   useCloseOnBackdrop(dialogRef);
 
   useEffect(() => {
@@ -81,104 +86,109 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
     setOpenIndex(null);
   }
 
-  if (photos.length === 0) {
-    return (
-      <p role="status" className="py-16 text-center text-label text-muted">
-        {copy.empty}
-      </p>
-    );
-  }
+  const lightboxLabel =
+    current && openIndex !== null ? photoLabel(current, openIndex, copy) : copy.heading;
+  const lightboxStatus =
+    openIndex === null ? "" : `${openIndex + 1} ${copy.counterSeparator} ${photos.length}`;
 
   return (
     <div>
-      <ul className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:py-22.5">
-        {visible.map((photo, index) => {
-          const label = photo.alt || `Foto ${index + 1}`;
-          return (
-            <li key={label}>
-              <button
-                type="button"
-                aria-label={label}
-                aria-haspopup="dialog"
-                aria-controls={dialogId}
-                aria-expanded={openIndex === index}
-                onClick={() => setOpenIndex(index)}
-                className="w-full cursor-pointer overflow-hidden bg-canvas shadow-card transition-shadow hover:shadow-photo"
-              >
-                <Image
-                  src={photo.src}
-                  alt=""
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(min-width: 64rem) 24rem, 100vw"
-                  className="aspect-square w-full object-cover"
-                />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <p role="status" className="sr-only">
+        {listStatus}
+      </p>
 
-      {hasMore ? (
-        <div className="flex justify-center py-2.5">
-          <button
-            type="button"
-            onClick={() => setVisibleCount((count) => count + pageSize)}
-            className="inline-flex h-12 w-50 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
+      {photos.length === 0 ? (
+        <p className="py-16 text-center text-label text-muted">{copy.empty}</p>
+      ) : (
+        <>
+          <ul
+            ref={listRef}
+            className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:pt-34 lg:pb-22.5"
           >
-            {copy.loadMoreLabel}
-          </button>
-        </div>
-      ) : null}
+            {visible.map((photo, index) => {
+              const label = photoLabel(photo, index, copy);
+              return (
+                // biome-ignore lint/suspicious/noArrayIndexKey: append-only list; photos share a placeholder src
+                <li key={`${photo.src}-${index}`}>
+                  <button
+                    type="button"
+                    aria-label={label}
+                    aria-haspopup="dialog"
+                    aria-controls={dialogId}
+                    aria-expanded={openIndex === index}
+                    onClick={() => setOpenIndex(index)}
+                    className="w-full cursor-pointer overflow-hidden bg-canvas shadow-card transition-shadow hover:shadow-photo"
+                  >
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      width={photo.width}
+                      height={photo.height}
+                      sizes="(min-width: 64rem) 24rem, 100vw"
+                      className="aspect-square w-full object-cover"
+                    />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
 
-      <dialog
-        ref={dialogRef}
-        id={dialogId}
-        aria-label={current?.alt || copy.heading}
-        aria-describedby={statusId}
-        className="w-[min(100%,--spacing(200))] bg-transparent"
-        onClose={closeLightbox}
-      >
-        {current && openIndex !== null ? (
-          <div className="relative flex items-center justify-center gap-4 px-12 py-10 lg:gap-8 lg:px-16">
-            <button
-              type="button"
-              onClick={() => move(-1)}
-              className="absolute left-0 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
-            >
-              <ChevronLeftIcon className="size-5" />
-              <span className="sr-only">{copy.previousLabel}</span>
-            </button>
-            <Image
-              src={current.src}
-              alt={current.alt}
-              width={current.width}
-              height={current.height}
-              sizes="(min-width: 64rem) 50rem, 100vw"
-              className="max-h-[80vh] w-full object-contain"
-            />
-            <button
-              type="button"
-              onClick={() => move(1)}
-              className="absolute right-0 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
-            >
-              <ChevronRightIcon className="size-5" />
-              <span className="sr-only">{copy.nextLabel}</span>
-            </button>
-            <button
-              type="button"
-              onClick={closeLightbox}
-              className="absolute top-0 right-0 inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
-            >
-              <CloseIcon className="size-5" />
-              <span className="sr-only">{copy.closeLabel}</span>
-            </button>
-            <p id={statusId} role="status" className="sr-only">
-              {`${openIndex + 1} de ${photos.length}`}
-            </p>
-          </div>
-        ) : null}
-      </dialog>
+          {hasMore ? (
+            <div className="flex justify-center py-2.5">
+              <LoadMoreButton onClick={revealMore}>{copy.loadMoreLabel}</LoadMoreButton>
+            </div>
+          ) : null}
+
+          <dialog
+            ref={dialogRef}
+            id={dialogId}
+            aria-label={lightboxLabel}
+            aria-describedby={statusId}
+            className="w-[min(100%,--spacing(240))] bg-transparent"
+            onClose={closeLightbox}
+          >
+            {current && openIndex !== null ? (
+              <div className="relative flex items-center justify-center py-10 lg:px-16">
+                <button
+                  type="button"
+                  onClick={() => move(-1)}
+                  className="absolute left-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:-left-5"
+                >
+                  <ArrowRightIcon className="size-5 rotate-180" />
+                  <span className="sr-only">{copy.previousLabel}</span>
+                </button>
+                <Image
+                  src={current.src}
+                  alt={current.alt}
+                  width={current.width}
+                  height={current.height}
+                  sizes="(min-width: 64rem) 60rem, 100vw"
+                  className="max-h-[80vh] w-full object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => move(1)}
+                  className="absolute right-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:-right-5"
+                >
+                  <ArrowRightIcon className="size-5" />
+                  <span className="sr-only">{copy.nextLabel}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={closeLightbox}
+                  className="absolute top-0 right-0 z-10 inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
+                >
+                  <CloseIcon className="size-5" />
+                  <span className="sr-only">{copy.closeLabel}</span>
+                </button>
+                <p id={statusId} role="status" className="sr-only">
+                  {lightboxStatus}
+                </p>
+              </div>
+            ) : null}
+          </dialog>
+        </>
+      )}
     </div>
   );
 }

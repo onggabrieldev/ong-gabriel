@@ -27,12 +27,16 @@ export type GalleryListCopy = {
   heading: string;
   loadMoreLabel: string;
   empty: string;
+  resultCount: string;
 };
 
 export type GalleryPhotosCopy = {
   heading: string;
   loadMoreLabel: string;
   empty: string;
+  resultCount: string;
+  photoLabel: string;
+  counterSeparator: string;
   previousLabel: string;
   nextLabel: string;
   closeLabel: string;

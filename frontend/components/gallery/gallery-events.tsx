@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EventCard } from "@/components/gallery/event-card";
 import { EventFilters, type GalleryFilterValues } from "@/components/gallery/event-filters";
+import { LoadMoreButton } from "@/components/gallery/load-more-button";
+import { useRevealMore } from "@/components/gallery/use-reveal-more";
 import type { EventLocation, EventType, PastEvent } from "@/lib/events/types";
 import type { GalleryFiltersCopy, GalleryListCopy } from "@/lib/gallery/types";
 
@@ -51,7 +53,13 @@ export function GalleryEvents(props: GalleryEventsProps) {
     tipo: readParam(searchParams.get(typeParam), typeIds),
     localizacao: readParam(searchParams.get(locationParam), locationIds),
   };
-  return <GalleryEventsView {...props} applied={applied} />;
+  return (
+    <GalleryEventsView
+      key={`${applied.tipo}|${applied.localizacao}`}
+      {...props}
+      applied={applied}
+    />
+  );
 }
 
 function GalleryEventsView({
@@ -63,18 +71,12 @@ function GalleryEventsView({
   applied,
 }: GalleryEventsProps & { applied: GalleryFilterValues }) {
   const router = useRouter();
-  const appliedTipo = applied.tipo;
-  const appliedLocalizacao = applied.localizacao;
   const [draft, setDraft] = useState<GalleryFilterValues>(applied);
-  const [visibleCount, setVisibleCount] = useState(pageSize);
   const filtered = filterEvents(events, applied);
+  const { listRef, visibleCount, hasMore, revealMore } = useRevealMore(pageSize, filtered.length);
   const visible = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
-
-  useEffect(() => {
-    setDraft({ tipo: appliedTipo, localizacao: appliedLocalizacao });
-    setVisibleCount(pageSize);
-  }, [appliedTipo, appliedLocalizacao]);
+  const statusText =
+    filtered.length === 0 ? listCopy.empty : `${filtered.length} ${listCopy.resultCount}`;
 
   function writeFilters(next: GalleryFilterValues) {
     const params = new URLSearchParams();
@@ -85,7 +87,7 @@ function GalleryEventsView({
       params.set(locationParam, next.localizacao);
     }
     const query = params.toString();
-    router.push(query ? `/agenda/galeria?${query}` : "/agenda/galeria");
+    router.push(query ? `/agenda/galeria?${query}` : "/agenda/galeria", { scroll: false });
   }
 
   return (
@@ -103,12 +105,14 @@ function GalleryEventsView({
         }}
       />
 
+      <p role="status" className="sr-only">
+        {statusText}
+      </p>
+
       {filtered.length === 0 ? (
-        <p role="status" className="py-16 text-center text-label text-muted">
-          {listCopy.empty}
-        </p>
+        <p className="py-16 text-center text-label text-muted">{listCopy.empty}</p>
       ) : (
-        <ul className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:py-22.5">
+        <ul ref={listRef} className="grid grid-cols-1 gap-10 py-16 lg:grid-cols-3 lg:py-22.5">
           {visible.map((event) => (
             <li key={event.id}>
               <EventCard event={event} />
@@ -119,13 +123,7 @@ function GalleryEventsView({
 
       {hasMore ? (
         <div className="flex justify-center py-2.5">
-          <button
-            type="button"
-            onClick={() => setVisibleCount((count) => count + pageSize)}
-            className="inline-flex h-12 w-50 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
-          >
-            {listCopy.loadMoreLabel}
-          </button>
+          <LoadMoreButton onClick={revealMore}>{listCopy.loadMoreLabel}</LoadMoreButton>
         </div>
       ) : null}
     </div>
