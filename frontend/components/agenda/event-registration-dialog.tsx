@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, type RefObject, useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { formatEventDate } from "@/components/agenda/format-event";
 import { CloseIcon } from "@/components/icons/icon";
 import { submitRegistration } from "@/lib/agenda/submit-registration";
@@ -83,7 +84,6 @@ export function EventRegistrationDialog({
       nextErrors.terms = copy.terms.requiredMessage;
     }
 
-    setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       const firstField = copy.fields.find((field) => nextErrors[field.id]);
       const targetId = firstField
@@ -91,11 +91,16 @@ export function EventRegistrationDialog({
         : nextErrors.terms
           ? `${formId}-terms`
           : undefined;
+      flushSync(() => {
+        setErrors(nextErrors);
+      });
       if (targetId) {
         document.getElementById(targetId)?.focus();
       }
       return;
     }
+
+    setErrors({});
 
     const payload: RegistrationInput = {
       name: values.name.trim(),
@@ -108,13 +113,17 @@ export function EventRegistrationDialog({
     setSubmitting(true);
     try {
       const result = await submitRegistration(event.id, payload);
-      closingForResult.current = true;
+      if (dialogRef.current?.open) {
+        closingForResult.current = true;
+      }
       if (result.ok) {
         resetForm();
       }
       onResult(result.ok);
     } catch {
-      closingForResult.current = true;
+      if (dialogRef.current?.open) {
+        closingForResult.current = true;
+      }
       onResult(false);
     } finally {
       setSubmitting(false);

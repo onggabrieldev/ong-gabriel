@@ -83,7 +83,7 @@ export function EventDetailsDialog({
           <div className="flex flex-col gap-5 sm:flex-row">
             <button
               type="button"
-              className="inline-flex h-12 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-indigo-deep bg-canvas px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky"
+              className="inline-flex h-12 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-indigo-deep bg-canvas px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky sm:flex-1"
               onClick={onCalendar}
             >
               <CalendarIcon className="size-6" />
@@ -92,7 +92,7 @@ export function EventDetailsDialog({
             {registrationOpen ? (
               <button
                 type="button"
-                className="inline-flex h-12 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep"
+                className="inline-flex h-12 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep sm:flex-1"
                 onClick={onRegister}
               >
                 <UserPlusIcon className="size-6" />

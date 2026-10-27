@@ -106,6 +106,7 @@ export function EventsSection({
   const detailsRef = useRef<HTMLDialogElement>(null);
   const registrationRef = useRef<HTMLDialogElement>(null);
   const statusRef = useRef<HTMLDialogElement>(null);
+  const firstRevealedCardRef = useRef<HTMLLIElement>(null);
   useCloseOnBackdrop(detailsRef);
   useCloseOnBackdrop(registrationRef);
   useCloseOnBackdrop(statusRef);
@@ -124,6 +125,17 @@ export function EventsSection({
     setDraft(next);
     setApplied(next);
   }, [appliedTipo, appliedLocal, appliedPeriodo]);
+
+  useEffect(() => {
+    if (!expanded) {
+      return;
+    }
+
+    const detailsButton = firstRevealedCardRef.current?.querySelector<HTMLButtonElement>(
+      `button[aria-controls="${detailsId}"]`,
+    );
+    detailsButton?.focus();
+  }, [expanded, detailsId]);
 
   useEffect(() => {
     const details = detailsRef.current;
@@ -270,8 +282,11 @@ export function EventsSection({
           </p>
           {filtered.length > 0 ? (
             <ul className="flex flex-col gap-11">
-              {visible.map((event) => (
-                <li key={event.id}>
+              {visible.map((event, index) => (
+                <li
+                  key={event.id}
+                  ref={index === copy.initialCount ? firstRevealedCardRef : undefined}
+                >
                   <EventCard
                     event={event}
                     copy={copy}
