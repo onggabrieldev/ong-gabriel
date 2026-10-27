@@ -10,6 +10,10 @@ export function useCloseOnBackdrop(dialogRef: RefObject<HTMLDialogElement | null
     }
 
     function onClick(this: HTMLDialogElement, event: MouseEvent) {
+      if (event.target !== this) {
+        return;
+      }
+
       const rect = this.getBoundingClientRect();
       const inside =
         event.clientX >= rect.left &&
