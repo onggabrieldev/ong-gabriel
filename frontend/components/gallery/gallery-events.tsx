@@ -41,8 +41,30 @@ function filterEvents(events: readonly PastEvent[], filters: GalleryFilterValues
   });
 }
 
+function listStatus(
+  events: readonly PastEvent[],
+  filters: GalleryFilterValues,
+  copy: GalleryListCopy,
+): string {
+  const count = filterEvents(events, filters).length;
+  return count === 0 ? copy.empty : `${count} ${copy.resultCount}`;
+}
+
+function GalleryStatus({ text }: { text: string }) {
+  return (
+    <p role="status" className="sr-only">
+      {text}
+    </p>
+  );
+}
+
 export function GalleryEventsFallback(props: GalleryEventsProps) {
-  return <GalleryEventsView {...props} applied={emptyFilters} />;
+  return (
+    <>
+      <GalleryStatus text={listStatus(props.events, emptyFilters, props.listCopy)} />
+      <GalleryEventsView {...props} applied={emptyFilters} />
+    </>
+  );
 }
 
 export function GalleryEvents(props: GalleryEventsProps) {
@@ -54,11 +76,14 @@ export function GalleryEvents(props: GalleryEventsProps) {
     localizacao: readParam(searchParams.get(locationParam), locationIds),
   };
   return (
-    <GalleryEventsView
-      key={`${applied.tipo}|${applied.localizacao}`}
-      {...props}
-      applied={applied}
-    />
+    <>
+      <GalleryStatus text={listStatus(props.events, applied, props.listCopy)} />
+      <GalleryEventsView
+        key={`${applied.tipo}|${applied.localizacao}`}
+        {...props}
+        applied={applied}
+      />
+    </>
   );
 }
 
@@ -75,8 +100,6 @@ function GalleryEventsView({
   const filtered = filterEvents(events, applied);
   const { listRef, visibleCount, hasMore, revealMore } = useRevealMore(pageSize, filtered.length);
   const visible = filtered.slice(0, visibleCount);
-  const statusText =
-    filtered.length === 0 ? listCopy.empty : `${filtered.length} ${listCopy.resultCount}`;
 
   function writeFilters(next: GalleryFilterValues) {
     const params = new URLSearchParams();
@@ -104,10 +127,6 @@ function GalleryEventsView({
           writeFilters(emptyFilters);
         }}
       />
-
-      <p role="status" className="sr-only">
-        {statusText}
-      </p>
 
       {filtered.length === 0 ? (
         <p className="py-16 text-center text-label text-muted">{listCopy.empty}</p>

@@ -144,15 +144,15 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
             id={dialogId}
             aria-label={lightboxLabel}
             aria-describedby={statusId}
-            className="w-[min(100%,--spacing(240))] bg-transparent"
+            className="w-[min(100%,--spacing(240))] overflow-hidden bg-transparent"
             onClose={closeLightbox}
           >
             {current && openIndex !== null ? (
-              <div className="relative flex items-center justify-center py-10 lg:px-16">
+              <div className="relative flex items-center justify-center py-10">
                 <button
                   type="button"
                   onClick={() => move(-1)}
-                  className="absolute left-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:-left-5"
+                  className="absolute left-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:left-4"
                 >
                   <ArrowRightIcon className="size-5 rotate-180" />
                   <span className="sr-only">{copy.previousLabel}</span>
@@ -168,7 +168,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
                 <button
                   type="button"
                   onClick={() => move(1)}
-                  className="absolute right-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:-right-5"
+                  className="absolute right-2 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full bg-ink text-canvas transition-colors hover:bg-navy lg:right-4"
                 >
                   <ArrowRightIcon className="size-5" />
                   <span className="sr-only">{copy.nextLabel}</span>
@@ -176,7 +176,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
                 <button
                   type="button"
                   onClick={closeLightbox}
-                  className="absolute top-0 right-0 z-10 inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
+                  className="absolute top-2 right-2 z-10 inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-canvas text-ink-soft shadow-card transition-colors hover:bg-sky-deep"
                 >
                   <CloseIcon className="size-5" />
                   <span className="sr-only">{copy.closeLabel}</span>
