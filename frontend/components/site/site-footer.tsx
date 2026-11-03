@@ -58,7 +58,8 @@ export function SiteFooter() {
 
         <div className="flex flex-col items-center gap-3 text-center text-sm font-medium text-muted">
           <p>
-            {siteName} © <CopyrightYear />. Todos os direitos reservados.
+            Organização Não Governamental Gabriel - {siteName} © <CopyrightYear />. Todos os
+            direitos reservados.
           </p>
           <p>CNPJ {organizationLegal.cnpj}</p>
           <address className="not-italic">{organizationLegal.address}</address>
