@@ -2,7 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon } from "@/components/icons/icon";
 import { CopyrightYear } from "@/components/site/copyright-year";
-import { mainNav, siteBrand, siteName, socialProfiles } from "@/lib/site/navigation";
+import {
+  mainNav,
+  organizationLegal,
+  siteBrand,
+  siteName,
+  socialProfiles,
+} from "@/lib/site/navigation";
 
 export function SiteFooter() {
   return (
@@ -54,6 +60,8 @@ export function SiteFooter() {
           <p>
             {siteName} © <CopyrightYear />. Todos os direitos reservados.
           </p>
+          <p>CNPJ {organizationLegal.cnpj}</p>
+          <address className="not-italic">{organizationLegal.address}</address>
         </div>
       </div>
     </footer>

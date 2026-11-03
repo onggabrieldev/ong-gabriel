@@ -7,6 +7,10 @@ type TestimonialsSectionProps = {
 };
 
 export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+  if (testimonials.items.length === 0) {
+    return null;
+  }
+
   return (
     <section aria-labelledby="testimonials-title" className="relative overflow-hidden">
       <Image src={testimonials.background.src} alt="" fill sizes="100vw" className="object-cover" />

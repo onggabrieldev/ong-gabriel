@@ -1,9 +1,6 @@
 import type { HomePageContent } from "@/lib/home/types";
 import { socialProfiles } from "@/lib/site/navigation";
 
-const placeholderQuote =
-  "Malesuada facilisi libero, nam eu. Quis pellentesque tortor a elementum ut blandit sed pellentesque arcu. Malesuada in faucibus risus velit diam. Non, massa ut a arcu, fermentum, vel interdum.";
-
 export const homePageContent: HomePageContent = {
   hero: {
     kicker: "Transformando vidas com",
@@ -158,29 +155,7 @@ export const homePageContent: HomePageContent = {
       width: 1024,
       height: 377,
     },
-    items: [
-      {
-        id: "testimonial-1",
-        quote: placeholderQuote,
-        name: "Nome",
-        role: "Função",
-        portrait: null,
-      },
-      {
-        id: "testimonial-2",
-        quote: placeholderQuote,
-        name: "Nome",
-        role: "Função",
-        portrait: null,
-      },
-      {
-        id: "testimonial-3",
-        quote: placeholderQuote,
-        name: "Nome",
-        role: "Função",
-        portrait: null,
-      },
-    ],
+    items: [],
   },
   contact: {
     title: "Entre em contato conosco!",
