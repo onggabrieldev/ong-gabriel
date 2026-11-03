@@ -8,6 +8,17 @@ export const siteName = "ONG Gabriel";
 
 export const siteBrand = "ONG GABRIEL";
 
+export type OrganizationLegal = {
+  cnpj: string;
+  address: string;
+};
+
+export const organizationLegal = {
+  cnpj: "50.900.694/0001-91",
+  address:
+    "Rua Frederico Alves da Costa, 473, Apto 41, Bloco A, Jardim Nova Hortolândia, Hortolândia/SP",
+} as const satisfies OrganizationLegal;
+
 export const mainNav = [
   { id: "home", label: "Home", href: "/" },
   { id: "about", label: "Sobre", href: "/sobre" },
