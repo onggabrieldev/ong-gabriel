@@ -4,13 +4,13 @@ Read `CONTEXT.md` before changing the product. Skills live under `.agents/skills
 
 ## Layout
 
-- `backend/` is the FastAPI app. `frontend/` is the Next.js app. Keep that split.
+- `backend/` is the Django app. `frontend/` is the Next.js app. Keep that split.
 - The uv workspace and the pnpm workspace are rooted at the repository. `uv.lock` and `.venv` stay at the root.
 - `bkp-repos/` is a local, gitignored copy of the old Django API and Next.js app. Open it only for a migration question. Do not port the CMS.
 
 ## Skills
 
-- Python and FastAPI, including settings and types: `fastapi`.
+- Python and Django, including settings and types: `django`.
 - Next.js and Tailwind class names: `frontend`.
 
 Type every change in Python and TypeScript.

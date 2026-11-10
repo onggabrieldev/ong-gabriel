@@ -15,7 +15,7 @@ The note map is [[docs/Home|Docs]].
 ## Apps
 
 - `frontend/` is Next.js (App Router) and stays. Public copy and page structure live here.
-- `backend/` is FastAPI and replaces the old Django API. The package name is `ong-gabriel-api`. The import path is `ong_gabriel_api`.
+- `backend/` is Django and Django REST Framework. The package name is `ong-gabriel-api`. The import path is `ong_gabriel_api`.
 
 `pnpm dev` runs the API on `127.0.0.1:8000` and the site on `localhost:3000`.
 
@@ -38,11 +38,11 @@ The old tables, and which ones were CMS, are in [[docs/legacy-database|Legacy da
 
 ## Stack
 
-- Python 3.15, uv, FastAPI, pytest, Ruff. Tests run with `pnpm test:api`.
-- Persistence is SQLAlchemy async, Postgres, and Alembic. The new schema starts empty. Django rows are not imported.
+- Python 3.15, uv, Django, Django REST Framework, pytest, Ruff. Tests run with `pnpm test:api`.
+- Persistence is Django ORM and Postgres. The new schema starts empty. Old Django rows are not imported.
 - API configuration is one pydantic-settings object. Local, dev, and prod differ by environment variables.
-- Authorization is RBAC in Postgres: roles and `resource:action` permissions. The browser uses an HTTP-only cookie. Local, dev, and prod change that cookie through settings.
-- A user account is email and password. Redis waits until a read path needs a cache.
+- The browser uses a Django session cookie (`HttpOnly`, `SameSite=Lax`) and Django CSRF. RBAC via Django groups arrives in branch 2. See [[docs/django-migration-decisions|Django migration decisions]].
+- A user account is username, email, and password. Redis waits until a read path needs a cache.
 - Node 22 or newer, pnpm, Next.js, React, Tailwind 4, Biome. `pnpm lint` runs Ruff and Biome. Class names follow the `frontend` skill.
 - CI is `.github/workflows/ci.yml`.
 
@@ -52,4 +52,4 @@ The old tables, and which ones were CMS, are in [[docs/legacy-database|Legacy da
 
 Manual requests live in `bruno/`. The `local`, `dev`, and `prod` environments differ by `baseUrl`. The `bruno-endpoints` skill is how new routes get a request file.
 
-The old Django API was mounted at `/v1/` (cookie JWT auth, blog, events, testimonials, and CMS).
+The old Django API was mounted at `/v1/` (cookie JWT auth, blog, events, testimonials, and CMS). Versioned routes now live under `/api/v1/`.

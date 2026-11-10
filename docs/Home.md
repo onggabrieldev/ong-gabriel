@@ -11,6 +11,7 @@ aliases:
 Open this repository as the Obsidian vault. Notes use frontmatter, wikilinks, and callouts.
 
 - [[CONTEXT|Product context]]
+- [[django-migration-decisions|Django migration decisions]]
 - [[legacy-database|Legacy database]]
 - [[comments|Comments]]
 - [[deploy|Deploy]]
