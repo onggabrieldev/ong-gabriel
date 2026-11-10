@@ -1,10 +1,8 @@
-from fastapi.testclient import TestClient
-
-from ong_gabriel_api.main import app
+from django.test import Client
 
 
-def test_health() -> None:
-    response = TestClient(app).get('/health')
+def test_health(client: Client) -> None:
+    response = client.get('/health')
 
     assert response.status_code == 200
     assert response.json() == {'status': 'ok'}

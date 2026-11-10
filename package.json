@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,magenta \"pnpm run dev:api\" \"pnpm run dev:web\"",
-    "dev:api": "uv run fastapi dev backend/src/ong_gabriel_api/main.py --host 127.0.0.1 --port 8000 --reload-dir backend",
+    "dev:api": "uv run python backend/manage.py runserver 127.0.0.1:8000",
+    "migrate:api": "uv run python backend/manage.py migrate",
     "dev:web": "pnpm --filter frontend dev",
     "lint": "pnpm run lint:api && pnpm run lint:web",
     "lint:api": "uv run ruff check && uv run ruff format --check",

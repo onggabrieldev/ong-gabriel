@@ -8,6 +8,8 @@ dependencies = ["ong-gabriel-api"]
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+    "pytest-env>=1.8.5",
     "ruff>=0.17.0",
 ]
 
@@ -21,7 +23,16 @@ ong-gabriel-api = { workspace = true }
 members = ["backend"]
 
 [tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "ong_gabriel_api.settings"
 testpaths = ["backend/tests"]
+env = [
+    "D:ENVIRONMENT=local",
+    "D:DEBUG=true",
+    "D:SECRET_KEY=test-secret-key-not-for-production",
+    "D:DATABASE_URL=postgresql://ong_gabriel:ong_gabriel@127.0.0.1:5432/ong_gabriel",
+    "D:ALLOWED_HOSTS=localhost,127.0.0.1,testserver",
+    "D:CSRF_TRUSTED_ORIGINS=http://127.0.0.1:3000,http://localhost:3000",
+]
 
 [tool.ruff]
 target-version = "py315"
@@ -33,6 +44,9 @@ extend-exclude = [".venv", "node_modules", "frontend", "bkp-repos"]
 select = ["E", "W", "F", "I", "UP", "B", "SIM", "RUF"]
 ignore = ["E501"]
 fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/*.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["ong_gabriel_api"]
