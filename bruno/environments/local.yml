@@ -4,4 +4,4 @@ variables:
     value: http://127.0.0.1:8000
     enabled: true
     secret: false
-    description: FastAPI dev server. No trailing slash.
+    description: Django dev server. No trailing slash.

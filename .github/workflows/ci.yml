@@ -17,6 +17,20 @@ jobs:
     name: Lint and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ong_gabriel
+          POSTGRES_PASSWORD: ong_gabriel
+          POSTGRES_DB: ong_gabriel
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ong_gabriel -d ong_gabriel"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v7
