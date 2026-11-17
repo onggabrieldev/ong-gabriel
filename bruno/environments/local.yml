@@ -2,6 +2,22 @@ name: local
 variables:
   - name: baseUrl
     value: http://127.0.0.1:8000
-    enabled: true
-    secret: false
     description: Django dev server. No trailing slash.
+  - name: frontendUrl
+    value: http://localhost:3000
+    description: Next.js origin. No trailing slash.
+  - name: username
+    value: alice
+    description: Username for login, signup, and me.
+  - name: email
+    value: alice@example.com
+    description: Email for login, signup, and password reset.
+  - secret: true
+    name: password
+    description: Account password. Leave empty in git.
+  - secret: true
+    name: verificationKey
+    description: Email confirmation key from the verification mail. Leave empty in git.
+  - secret: true
+    name: resetKey
+    description: Password reset key from the reset mail. Leave empty in git.

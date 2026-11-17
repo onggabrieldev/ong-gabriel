@@ -59,6 +59,10 @@ settings:
 
 JSON body: under `http.body`, set `type: json` and `data` to the JSON string. Path params go in `http.params` with `type: path`. Query params use `type: query`.
 
+Scripts go under `runtime.scripts`. The types are `before-request`, `after-response`, and `tests`. Bruno silently ignores any other type, such as `pre-request` or `post-response`.
+
+Session writes need Django CSRF. Run `auth/Session` first. Its `after-response` script stores the `csrftoken` value from `Set-Cookie` in the `csrfToken` runtime variable, and each write sets `X-CSRFToken` from it in `before-request`. Keep `csrfToken` out of the environments: it changes with every session.
+
 Folder marker:
 
 ```yaml

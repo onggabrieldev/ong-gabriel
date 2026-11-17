@@ -1,0 +1,51 @@
+info:
+  name: Signup
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/_allauth/browser/v1/auth/signup"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "username": "{{username}}",
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.getVar("csrfToken");
+        if (!token) {
+          throw new Error("Run auth/Session first. It sets the csrftoken cookie.");
+        }
+        req.setHeader("X-CSRFToken", token);
+    - type: after-response
+      code: |-
+        // Django rotates the CSRF token on login, so keep the latest one.
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+    - type: tests
+      code: |-
+        // 401: account created, email verification pending (PASSWORD_SIGNUP_ENABLED=true).
+        // 403: password signup is closed (the production default).
+        test("status is 401 when open or 403 when closed", function () {
+          expect([401, 403]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true

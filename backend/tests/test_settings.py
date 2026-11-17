@@ -2,7 +2,7 @@ import pytest
 from django.test import Client, override_settings
 from pydantic import ValidationError
 
-from ong_gabriel_api.settings import AppSettings, security_settings
+from ong_gabriel_api.settings import AppSettings, mailers_from_settings, security_settings
 
 
 def _settings(**overrides: object) -> AppSettings:
@@ -13,6 +13,7 @@ def _settings(**overrides: object) -> AppSettings:
         'DATABASE_URL': 'postgresql://ong_gabriel:ong_gabriel@127.0.0.1:5432/ong_gabriel',
         'ALLOWED_HOSTS': ['localhost'],
         'CSRF_TRUSTED_ORIGINS': ['http://localhost:3000'],
+        'FRONTEND_URL': 'http://localhost:3000',
     }
     values.update(overrides)
     return AppSettings(_env_file=None, **values)
@@ -33,6 +34,7 @@ def test_secret_key_required(monkeypatch: pytest.MonkeyPatch) -> None:
             DATABASE_URL='postgresql://ong_gabriel:ong_gabriel@127.0.0.1:5432/ong_gabriel',
             ALLOWED_HOSTS=['localhost'],
             CSRF_TRUSTED_ORIGINS=['http://localhost:3000'],
+            FRONTEND_URL='http://localhost:3000',
         )
 
 
@@ -70,3 +72,40 @@ def test_health_exempt_from_ssl_redirect(client: Client) -> None:
     assert health.status_code == 200
     admin = client.get('/django-admin/')
     assert admin.status_code == 301
+
+
+def test_frontend_url_strips_trailing_slash() -> None:
+    settings = _settings(FRONTEND_URL='http://localhost:3000/')
+    assert settings.FRONTEND_URL == 'http://localhost:3000'
+
+
+def test_frontend_url_rejects_path() -> None:
+    with pytest.raises(ValidationError):
+        _settings(FRONTEND_URL='http://localhost:3000/app')
+
+
+@pytest.mark.parametrize('environment', ['dev', 'prod'])
+def test_trusted_proxy_count_required_outside_local(environment: str) -> None:
+    with pytest.raises(ValidationError):
+        _settings(ENVIRONMENT=environment, TRUSTED_PROXY_COUNT=0)
+
+
+def test_trusted_proxy_count_zero_allowed_in_local() -> None:
+    settings = _settings(ENVIRONMENT='local', TRUSTED_PROXY_COUNT=0)
+    assert settings.TRUSTED_PROXY_COUNT == 0
+
+
+def test_mailers_built_from_email_env_fields() -> None:
+    settings = _settings()
+    mailers = mailers_from_settings(
+        host=settings.EMAIL_HOST,
+        port=settings.EMAIL_PORT,
+        username=settings.EMAIL_HOST_USER,
+        password=settings.EMAIL_HOST_PASSWORD,
+        use_tls=settings.EMAIL_USE_TLS,
+    )
+    options = mailers['default']['OPTIONS']
+    assert mailers['default']['BACKEND'] == 'django.core.mail.backends.smtp.EmailBackend'
+    assert options['host'] == '127.0.0.1'
+    assert options['port'] == 1025
+    assert options['use_tls'] is False

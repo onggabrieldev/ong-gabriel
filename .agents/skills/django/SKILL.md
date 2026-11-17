@@ -50,3 +50,7 @@ Check the permission on the server for every protected read or write. DRF `DEFAU
 Pytest-django covers behavior that can break: permission denied, conflicts, invalid input, and settings that must refuse a bad environment. Run tests against Postgres. Do not test a constant or a framework default for coverage.
 
 When a route changes, update `backend/tests` if the behavior can fail, and update Bruno with the `bruno-endpoints` skill.
+
+## Accounts
+
+allauth adapters live in `ong_gabriel_api/accounts/adapters.py`. Group names are constants in `accounts/roles.py`. Username rules live in `accounts/validators.py`; import `ACCOUNT_USERNAME_VALIDATORS` instead of duplicating the regex. Rate limits use `CACHES['default']` (`DatabaseCache`, table `django_cache`). After `migrate`, run `createcachetable` (`pnpm migrate:api`). A social login may sign in to an existing account by email only when that local `EmailAddress` is verified (`SocialAccountAdapter.authenticate_by_email`), and each account holds one email. Mount only the provider callback routes, never the whole `allauth.urls`. Product rules for accounts are in `docs/accounts.md`.

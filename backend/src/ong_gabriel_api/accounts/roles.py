@@ -1,0 +1,3 @@
+EDITOR_GROUP = 'editor'
+MODERATOR_GROUP = 'moderator'
+ROLE_GROUPS: tuple[str, ...] = (EDITOR_GROUP, MODERATOR_GROUP)

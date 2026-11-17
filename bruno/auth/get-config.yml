@@ -1,0 +1,23 @@
+info:
+  name: Config
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/_allauth/browser/v1/config"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("login accepts username or email", function () {
+          expect(res.body.data.account.login_methods).to.have.members(["username", "email"]);
+        });
+
+settings:
+  encodeUrl: true
