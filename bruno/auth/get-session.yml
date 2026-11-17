@@ -1,0 +1,31 @@
+info:
+  name: Session
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/_allauth/browser/v1/auth/session"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 401 when anonymous", function () {
+          expect(res.status).to.equal(401);
+        });
+    - type: after-response
+      code: |-
+        // Django rotates the CSRF token on login, so keep the latest one.
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+
+settings:
+  encodeUrl: true

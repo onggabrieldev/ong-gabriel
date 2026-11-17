@@ -25,6 +25,7 @@ members = ["backend"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "ong_gabriel_api.settings"
 testpaths = ["backend/tests"]
+pythonpath = ["backend/tests"]
 env = [
     "D:ENVIRONMENT=local",
     "D:DEBUG=true",
@@ -32,6 +33,11 @@ env = [
     "D:DATABASE_URL=postgresql://ong_gabriel:ong_gabriel@127.0.0.1:5432/ong_gabriel",
     "D:ALLOWED_HOSTS=localhost,127.0.0.1,testserver",
     "D:CSRF_TRUSTED_ORIGINS=http://127.0.0.1:3000,http://localhost:3000",
+    "D:FRONTEND_URL=http://localhost:3000",
+    "D:PASSWORD_SIGNUP_ENABLED=false",
+    "D:TRUSTED_PROXY_COUNT=0",
+    "D:GOOGLE_CLIENT_ID=",
+    "D:GOOGLE_CLIENT_SECRET=",
 ]
 
 [tool.ruff]

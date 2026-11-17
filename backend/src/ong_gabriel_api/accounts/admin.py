@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm as DjangoUserChangeForm
 from django.contrib.auth.forms import UserCreationForm as DjangoUserCreationForm
+from django.forms import BaseModelForm
+from django.http import HttpRequest
 
+from ong_gabriel_api.accounts.emails import sync_verified_primary_email
 from ong_gabriel_api.accounts.models import User
 
 
@@ -53,3 +56,8 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+
+    def save_model(self, request: HttpRequest, obj: User, form: BaseModelForm | None, change: bool) -> None:
+        super().save_model(request, obj, form, change)
+        if request.user.is_superuser:
+            sync_verified_primary_email(obj)

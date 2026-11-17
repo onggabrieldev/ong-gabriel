@@ -5,6 +5,10 @@ bundled: false
 extensions:
   bruno:
     defaultEnvironment: local
+# Session writes (login, logout, signup, verify, password, me PATCH) need Django CSRF.
+# Run auth/Session first: its response sets the csrftoken cookie and the csrfToken runtime variable.
+# Each write request sends that variable as X-CSRFToken in its before-request script.
+# password is a secret variable; leave it empty in git.
 request:
   headers:
     - name: Accept
