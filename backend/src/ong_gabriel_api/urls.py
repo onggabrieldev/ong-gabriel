@@ -1,3 +1,4 @@
+from allauth.socialaccount.providers.google.views import oauth2_callback as google_callback
 from django.conf import settings
 from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
@@ -14,7 +15,7 @@ admin.site.index_title = 'Administration'
 def build_urlpatterns() -> list[URLPattern | URLResolver]:
     api_v1: list[URLPattern | URLResolver] = [
         path('_allauth/', include('allauth.headless.urls')),
-        path('accounts/', include('allauth.urls')),
+        path('accounts/google/login/callback/', google_callback, name='google_callback'),
         path('me/', MeView.as_view(), name='me'),
     ]
     if settings.ENVIRONMENT != 'prod':

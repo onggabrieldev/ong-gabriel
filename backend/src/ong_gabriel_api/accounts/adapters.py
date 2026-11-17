@@ -1,4 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialLogin
 from django.conf import settings
@@ -28,6 +29,19 @@ class AccountAdapter(DefaultAccountAdapter):
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         return True
+
+    def authenticate_by_email(self, sociallogin: SocialLogin) -> tuple[User, str] | None:
+        # allauth falls back to an unverified local address, which lets anyone who parks
+        # a victim's email on their own account receive that victim's Google login.
+        for address in sociallogin.email_addresses:
+            if not address.verified or not self.can_authenticate_by_email(sociallogin, address.email):
+                continue
+            local = (
+                EmailAddress.objects.filter(email__iexact=address.email, verified=True).select_related('user').first()
+            )
+            if local is not None:
+                return local.user, address.email
+        return None
 
     def populate_user(self, request: HttpRequest, sociallogin: SocialLogin, data: dict[str, str | None]) -> User:
         user = super().populate_user(request, sociallogin, data)

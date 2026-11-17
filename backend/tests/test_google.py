@@ -2,12 +2,20 @@ import re
 from unittest.mock import patch
 
 import pytest
+from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from django.http import HttpResponse
 from django.test import Client, override_settings
 from django.urls import reverse
 
-from allauth_http import GOOGLE_PROVIDERS, create_verified_user, google_userinfo, json_get, start_google_redirect
+from allauth_http import (
+    GOOGLE_PROVIDERS,
+    PASSWORD,
+    create_verified_user,
+    google_userinfo,
+    json_get,
+    start_google_redirect,
+)
 from ong_gabriel_api.accounts.models import User
 
 pytestmark = pytest.mark.django_db
@@ -88,3 +96,13 @@ def test_google_connects_existing_verified_email(client: Client) -> None:
     _complete_google_callback(client, google_userinfo(email='guser@example.com'))
     assert User.objects.filter(email__iexact='guser@example.com').count() == 1
     assert SocialAccount.objects.filter(user=existing, provider='google').exists()
+
+
+@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS)
+def test_google_login_ignores_unverified_local_email(client: Client) -> None:
+    attacker = User.objects.create_user('attacker', 'attacker@example.com', PASSWORD)
+    EmailAddress.objects.create(user=attacker, email='victim@example.com', verified=False, primary=False)
+    _complete_google_callback(client, google_userinfo(email='victim@example.com', sub='google-victim'))
+    assert not SocialAccount.objects.filter(user=attacker).exists()
+    me = client.get('/api/v1/me/')
+    assert me.status_code == 403 or me.json()['username'] != 'attacker'

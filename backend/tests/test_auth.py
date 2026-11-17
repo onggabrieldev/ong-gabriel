@@ -1,4 +1,5 @@
 import pytest
+from allauth.account.models import EmailAddress
 from django.core import mail
 from django.test import Client, override_settings
 
@@ -166,3 +167,11 @@ def test_signup_username_rules(client: Client) -> None:
         )
     assert too_short.status_code == 400
     assert at_sign.status_code == 400
+
+
+def test_account_cannot_add_a_second_email(client: Client) -> None:
+    create_verified_user('alice', 'alice@example.com')
+    json_post(client, '/auth/login', {'username': 'alice', 'password': PASSWORD})
+    response = json_post(client, '/account/email', {'email': 'victim@example.com'})
+    assert response.status_code == 400
+    assert not EmailAddress.objects.filter(email__iexact='victim@example.com').exists()

@@ -80,3 +80,17 @@ def test_per_key_failed_logins_blocked_across_ips(client: Client) -> None:
     )
     assert blocked.status_code == 400
     assert blocked.json()['errors'][0]['code'] == 'too_many_login_attempts'
+
+
+@override_settings(ALLAUTH_TRUSTED_PROXY_COUNT=1)
+def test_spoofed_forwarded_for_prefix_is_ignored(client: Client) -> None:
+    last = None
+    for index in range(LOGIN_PER_IP + 1):
+        last = _failed_login(
+            client,
+            f'user{index:02d}',
+            forwarded_for=f'198.51.100.{index}, 203.0.113.10',
+            remote_addr=PROXY_REMOTE_ADDR,
+        )
+    assert last is not None
+    assert last.status_code == 429

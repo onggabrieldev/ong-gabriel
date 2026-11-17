@@ -16,7 +16,7 @@ The browser client uses the Django session cookie and Django CSRF. There are no 
 
 ## Routes
 
-Caddy forwards `/api/*` to Django. Headless routes live under `/api/v1/_allauth/browser/v1/`. The Google callback lives under `/api/v1/accounts/`.
+Caddy forwards `/api/*` to Django. Headless routes live under `/api/v1/_allauth/browser/v1/`. Only the Google OAuth callback is routed under `/api/v1/accounts/`.
 
 | Operation | Method | Path |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ Caddy forwards `/api/*` to Django. Headless routes live under `/api/v1/_allauth/
 | Google callback | GET | `/api/v1/accounts/google/login/callback/` |
 | Current user | GET, PATCH | `/api/v1/me/` |
 
-HTML login and signup pages are not routed (`HEADLESS_ONLY`). The app client is not routed. Headless OpenAPI (`/api/v1/_allauth/openapi.json`) is served only outside prod, like the DRF schema.
+HTML login and signup pages are not routed. Google One Tap (`/api/v1/accounts/google/login/token/`) is not routed either, because it skips Django CSRF. The app client is not routed. Headless OpenAPI (`/api/v1/_allauth/openapi.json`) is served only outside prod, like the DRF schema.
 
 Session writes send `X-CSRFToken` with the `csrftoken` cookie. In Bruno, run `auth/Session` first: each response that sets `csrftoken` stores it in the `csrfToken` variable, and Django rotates it on login.
 
@@ -47,7 +47,7 @@ Email verify and password reset succeed without opening a session (`ACCOUNT_LOGI
 | --- | --- | --- |
 | `FRONTEND_URL` | required | Next.js origin, no trailing slash. Builds verification and reset links. |
 | `PASSWORD_SIGNUP_ENABLED` | `false` | When false, email and password signup is closed. Google signup stays open. |
-| `TRUSTED_PROXY_COUNT` | `0` | Trusted hops in `X-Forwarded-For`. Must be at least `1` outside `local` (Caddy). |
+| `TRUSTED_PROXY_COUNT` | `0` | Trusted hops in `X-Forwarded-For`. Must equal the real number of proxies: `1` behind Caddy. Must be at least `1` outside `local`. |
 | `EMAIL_HOST` | `127.0.0.1` | SMTP host. Local default is Mailpit. Builds `MAILERS['default']`. |
 | `EMAIL_PORT` | `1025` | SMTP port. |
 | `EMAIL_HOST_USER` | empty | SMTP username. Empty for Mailpit. |
@@ -82,7 +82,7 @@ Register these redirect URIs with Google:
 
 Scopes are `openid`, `email`, and `profile`. Credentials come from the environment. The provider is configured in `SOCIALACCOUNT_PROVIDERS['google']['APP']` only when both are set. There are no `SocialApp` database rows. With them empty, the headless config endpoint does not list Google.
 
-A Google verified email can sign in to an existing account with that email (`SOCIALACCOUNT_EMAIL_AUTHENTICATION` and auto-connect). That is trusted because Google verifies emails. A Google signup gets a generated username from the Google given name (or the first word of the full name), slugged, then a random 4-digit suffix (`jose4821`). The email is never used: the username is public on comments. With no usable name, the stem is `usuario`. A case-insensitive collision draws a new suffix; after a few tries the suffix grows more digits, still fitting 32 characters. The user can change that username later through `PATCH /api/v1/me/`.
+A Google verified email can sign in to an existing account with that email (`SOCIALACCOUNT_EMAIL_AUTHENTICATION` and auto-connect), but only when that local address is verified too. allauth would otherwise fall back to an unverified address, so anyone who parked a victim's email on their own account would receive the victim's Google login. Each account holds one email (`ACCOUNT_MAX_EMAIL_ADDRESSES = 1`). A Google signup gets a generated username from the Google given name (or the first word of the full name), slugged, then a random 4-digit suffix (`jose4821`). The email is never used: the username is public on comments. With no usable name, the stem is `usuario`. A case-insensitive collision draws a new suffix; after a few tries the suffix grows more digits, still fitting 32 characters. The user can change that username later through `PATCH /api/v1/me/`.
 
 ## Roles
 
@@ -113,7 +113,7 @@ allauth defaults. Brazil has heavy CGNAT, so many real users share one IP. Tight
 | `reset_password_from_key` | `20/m/ip` | Default. |
 | `confirm_email` | `1/180s/key` | Default cooldown. |
 
-`TRUSTED_PROXY_COUNT` maps to `ALLAUTH_TRUSTED_PROXY_COUNT`. Outside `local` it must be at least 1.
+`TRUSTED_PROXY_COUNT` maps to `ALLAUTH_TRUSTED_PROXY_COUNT`. Outside `local` it must be at least 1. Set it to the exact number of proxies: a larger value lets a client choose the IP the limits key on, by prepending its own `X-Forwarded-For` entries.
 
 ## Mailpit
 

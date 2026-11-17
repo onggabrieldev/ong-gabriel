@@ -47,3 +47,8 @@ def test_html_login_and_signup_are_absent(client: Client) -> None:
 
 def test_app_client_is_not_routed(client: Client) -> None:
     assert client.get('/api/v1/_allauth/app/v1/auth/session').status_code == 404
+
+
+def test_google_one_tap_and_login_page_are_not_routed(client: Client) -> None:
+    assert client.post('/api/v1/accounts/google/login/token/').status_code == 404
+    assert client.get('/api/v1/accounts/google/login/').status_code == 404

@@ -2,8 +2,11 @@ import re
 from collections.abc import Iterator
 
 import pytest
+from allauth.socialaccount.models import SocialAccount, SocialLogin
+from django.test import RequestFactory
 
 from allauth_http import PASSWORD
+from ong_gabriel_api.accounts.adapters import SocialAccountAdapter
 from ong_gabriel_api.accounts.models import USERNAME_MAX_LENGTH, User
 from ong_gabriel_api.accounts.usernames import (
     ATTEMPTS_PER_WIDTH,
@@ -40,11 +43,21 @@ def test_stem_falls_back_to_usuario_when_name_is_empty() -> None:
     assert username_stem_from_social(given_name='!!!', name='+++') == 'usuario'
 
 
-def test_stem_never_uses_email_local_part() -> None:
-    stem = username_stem_from_social(given_name='Maria', name='Maria Silva')
-    assert stem == 'Maria'
-    assert 'jose' not in stem.lower()
-    assert 'silva.1987' not in stem
+def _populate_google_user(rf: RequestFactory, extra_data: dict[str, str], data: dict[str, str | None]) -> User:
+    account = SocialAccount(provider='google', uid='google-uid', extra_data=extra_data)
+    sociallogin = SocialLogin(user=User(), account=account)
+    return SocialAccountAdapter().populate_user(rf.get('/'), sociallogin, data)
+
+
+def test_adapter_username_comes_from_name_not_email(rf: RequestFactory) -> None:
+    email = 'jose.silva.1987@gmail.com'
+    user = _populate_google_user(
+        rf,
+        {'email': email, 'given_name': 'Maria', 'name': 'Maria Silva'},
+        {'email': email, 'first_name': 'Maria', 'name': 'Maria Silva'},
+    )
+    assert user.username.startswith('Maria')
+    assert 'jose' not in user.username.lower()
 
 
 def test_generated_username_has_random_numeric_suffix() -> None:
@@ -69,12 +82,11 @@ def test_generated_username_cuts_long_name_to_max_length() -> None:
     assert username[USERNAME_MAX_LENGTH - INITIAL_SUFFIX_DIGITS :].isdigit()
 
 
-def test_generated_username_never_contains_email_local_part() -> None:
-    local = 'jose.silva.1987'
-    username = generate_unique_username(given_name='Maria', name='Maria Silva')
-    assert local not in username
-    assert 'jose' not in username.lower()
-    assert username.startswith('Maria')
+def test_adapter_username_without_name_ignores_email(rf: RequestFactory) -> None:
+    email = 'jose.silva.1987@gmail.com'
+    user = _populate_google_user(rf, {'email': email}, {'email': email})
+    assert user.username.startswith('usuario')
+    assert 'jose' not in user.username.lower()
 
 
 def test_unique_username_retries_on_case_insensitive_collision(monkeypatch: pytest.MonkeyPatch) -> None:
