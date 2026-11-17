@@ -12,11 +12,15 @@ Read `CONTEXT.md` before changing the product. Skills live under `.agents/skills
 
 - Python and Django, including settings and types: `django`.
 - Next.js and Tailwind class names: `frontend`.
-
-Type every change in Python and TypeScript.
 - A new or changed route: `bruno-endpoints`.
 
+Type every change in Python and TypeScript.
+
 Do not delete, skip, or weaken a test, and do not undo a settled decision, unless the user agrees.
+
+## Workflow
+
+Where the work stands and what comes next is in `docs/next-steps.md`. Work on a branch in the main checkout, created from an up-to-date `main`, not in a separate worktree. Leave changes uncommitted until the owner tests and approves them.
 
 ## Secrets
 
