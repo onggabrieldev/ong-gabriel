@@ -83,9 +83,16 @@ Product context is in [[CONTEXT|Product context]]. Comment rules are in [[commen
 - OpenAPI is served at `/api/v1/schema/` and `/api/v1/docs/`, but not in `prod`.
 - The Django admin uses the plain theme at `/django-admin/`, only as a superuser fallback.
 
+### Settled on 2026-11-10 for branch 2
+
+- Roles use **Django groups and permissions** as RBAC: `editor` for content and `moderator` for comments. A commenter has no group.
+- Login rate limits are **allauth's**, stored in a shared Django cache. The database cache comes first. Redis only if it becomes necessary. The client IP comes from the trusted proxy count, since Caddy sits in front.
+- Local email goes to **Mailpit** in `compose.dev.yaml`.
+
 ### Workflow
 
 - Implementation is done by Orca workers running Grok 4.6. The coordinator reviews their work.
+- From branch 3 on, work happens on a branch in the main checkout (`C:\Users\kaironn\code\ong-gabriel`), not in a separate worktree, so the owner can check it in place. Decided on 2026-11-17. See [[next-steps|Next steps]].
 - One branch at a time. The owner tests the flow on that branch and approves it before the next branch starts.
 - The coordinator asks about decisions and pull requests as they come up.
 - Workers never push or open pull requests. The coordinator does that after approval.
@@ -97,9 +104,6 @@ These defaults are written into the specs. Confirm or change them before the bra
 
 | Topic | Proposal | Branch |
 | --- | --- | --- |
-| Roles | Django groups and permissions as RBAC: `editor` for content and `moderator` for comments. A commenter has no group. | 2 |
-| Rate-limit store | allauth rate limits backed by a shared Django cache. Database cache first, Redis only if needed. Trust the proxy IP count from Caddy. | 2 |
-| Local email | Mailpit in `compose.dev.yaml`. | 2 |
 | Media | Local Docker volume served by Caddy. Uploads checked for type and size. No SVG uploads. | 4 |
 | Post body | A structured format rendered without `dangerouslySetInnerHTML`, such as Tiptap JSON mapped to the current block types. The Figma editor has a rich text toolbar. **Decide before branch 7.** | 4, 7 |
 | Comment target | Plain foreign key to the post. Events can be added later by migration. | 9 |
@@ -113,9 +117,9 @@ These defaults are written into the specs. Confirm or change them before the bra
 
 | # | Branch | Delivers | Status |
 | --- | --- | --- | --- |
-| 1 | `feat-django-api` | Django and DRF in place of FastAPI, custom user, Postgres for local dev, `/health`, CI, Bruno, `django` skill, updated docs | Ready for review |
-| 2 | `feat-accounts-api` | allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles | Waiting |
-| 3 | `feat-auth-screens` | Sign in, sign up, email verification, and password reset screens in Next.js | Waiting |
+| 1 | `feat-django-api` | Django and DRF in place of FastAPI, custom user, Postgres for local dev, `/health`, CI, Bruno, `django` skill, updated docs | Merged |
+| 2 | `feat-accounts-api` | allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles | Merged |
+| 3 | `feat-auth-screens` | Sign in, sign up, email verification, and password reset screens in Next.js | Next |
 | 4 | `feat-content-api` | Blog, categories, and media with checked uploads | Waiting |
 | 5 | `feat-events-api` | Events, addresses, types, gallery, testimonials, event registration | Waiting |
 | 6 | `feat-site-integration` | Next.js reads from the API in place of `content.ts`, keeping cache and Lighthouse | Waiting |
@@ -128,7 +132,7 @@ These defaults are written into the specs. Confirm or change them before the bra
 ## What the owner must provide
 
 > [!todo] Google, for production login
-> A Google Cloud project, ideally under an ONG account, with an OAuth consent screen and an OAuth Client ID. Scopes are `openid`, `email`, and `profile`. The exact redirect URLs come with branch 2.
+> A Google Cloud project, ideally under an ONG account, with an OAuth consent screen and an OAuth Client ID. Scopes are `openid`, `email`, and `profile`. Redirect URIs: `https://<domain>/api/v1/accounts/google/login/callback/` in production and `http://127.0.0.1:8000/api/v1/accounts/google/login/callback/` locally. See [[accounts|Accounts]].
 
 > [!todo] Email, only when public sign-up is turned on
 > A transactional email provider such as Brevo, Resend, or SES. A sender such as `noreply@onggabriel.com.br`. SPF, DKIM, and DMARC records in DNS.

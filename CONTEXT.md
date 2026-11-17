@@ -10,7 +10,7 @@ aliases:
 
 Public site for ONG Gabriel, a Brazilian nonprofit focused on suicide prevention. It publishes a blog, an event calendar, outreach pages, and donations.
 
-The note map is [[docs/Home|Docs]].
+The note map is [[docs/Home|Docs]]. Where the work stands and what comes next: [[docs/next-steps|Next steps]].
 
 ## Apps
 
@@ -41,14 +41,14 @@ The old tables, and which ones were CMS, are in [[docs/legacy-database|Legacy da
 - Python 3.15, uv, Django, Django REST Framework, pytest, Ruff. Tests run with `pnpm test:api`.
 - Persistence is Django ORM and Postgres. The new schema starts empty. Old Django rows are not imported.
 - API configuration is one pydantic-settings object. Local, dev, and prod differ by environment variables.
-- The browser uses a Django session cookie (`HttpOnly`, `SameSite=Lax`) and Django CSRF. RBAC via Django groups arrives in branch 2. See [[docs/django-migration-decisions|Django migration decisions]].
-- A user account is username, email, and password. Redis waits until a read path needs a cache.
+- The browser uses a Django session cookie (`HttpOnly`, `SameSite=Lax`) and Django CSRF. RBAC uses Django groups `editor` and `moderator`. See [[docs/accounts|Accounts]] and [[docs/django-migration-decisions|Django migration decisions]].
+- A user account is username, email, and password. Rate limits use the Django database cache (`django_cache`). Local mail goes to Mailpit. Redis waits until a read path needs a cache.
 - Node 22 or newer, pnpm, Next.js, React, Tailwind 4, Biome. `pnpm lint` runs Ruff and Biome. Class names follow the `frontend` skill.
 - CI is `.github/workflows/ci.yml`.
 
 ## API checks
 
-`GET /health` returns `{"status": "ok"}`.
+`GET /health` returns `{"status": "ok"}`. Authenticated `GET /api/v1/me/` returns the current user. Account routes are in [[docs/accounts|Accounts]].
 
 Manual requests live in `bruno/`. The `local`, `dev`, and `prod` environments differ by `baseUrl`. The `bruno-endpoints` skill is how new routes get a request file.
 
