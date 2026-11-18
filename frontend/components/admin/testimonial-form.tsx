@@ -315,7 +315,7 @@ export function TestimonialForm({ mode, initial, onCancel, onSaved }: Testimonia
                       fileRef.current.value = "";
                     }
                   }}
-                  className="inline-flex h-10 cursor-pointer items-center rounded-full border border-navy bg-canvas px-4 text-body font-semibold text-navy transition-colors hover:bg-sky"
+                  className="inline-flex h-10 cursor-pointer items-center rounded-full border border-danger bg-canvas px-4 text-body font-semibold text-danger transition-colors hover:bg-danger-soft"
                 >
                   Remover foto
                 </button>
