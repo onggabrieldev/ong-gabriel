@@ -2,6 +2,7 @@
 
 import uuid
 
+import django.core.validators
 from django.db import migrations, models
 
 
@@ -15,7 +16,7 @@ class Migration(migrations.Migration):
             name='Testimonial',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('quote', models.TextField()),
+                ('quote', models.TextField(validators=[django.core.validators.MaxLengthValidator(500)])),
                 ('name', models.CharField(max_length=80)),
                 ('role', models.CharField(blank=True, max_length=80)),
                 ('portrait', models.ImageField(blank=True, null=True, upload_to='testimonials/')),

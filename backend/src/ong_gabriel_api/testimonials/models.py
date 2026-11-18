@@ -1,18 +1,10 @@
 import uuid
 from typing import ClassVar
 
-from django.core.files.storage import default_storage
 from django.core.validators import MaxLengthValidator
 from django.db import models, transaction
 
-
-def _delete_stored_file(name: str) -> None:
-    if name and default_storage.exists(name):
-        default_storage.delete(name)
-
-
-def _schedule_file_delete(name: str) -> None:
-    transaction.on_commit(lambda stored=name: _delete_stored_file(stored))
+from ong_gabriel_api.testimonials.files import schedule_file_delete
 
 
 class Testimonial(models.Model):
@@ -51,7 +43,7 @@ class Testimonial(models.Model):
         super().save(*args, **kwargs)
         current_name = self.portrait.name if self.portrait else ''
         if previous_name and previous_name != current_name:
-            _schedule_file_delete(previous_name)
+            schedule_file_delete(previous_name)
 
     def _portrait_name_on_disk(self) -> str:
         stored = Testimonial.objects.filter(pk=self.pk).values_list('portrait', flat=True).first()
