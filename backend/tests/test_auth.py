@@ -84,6 +84,15 @@ def test_signup_enumeration_matches_existing_email(client: Client) -> None:
     assert taken.json()['status'] == fresh.json()['status']
 
 
+def test_create_superuser_login_by_username_and_email(client: Client) -> None:
+    User.objects.create_superuser('admin', 'admin@example.com', PASSWORD)
+    by_username = json_post(client, '/auth/login', {'username': 'admin', 'password': PASSWORD})
+    assert by_username.status_code == 200
+    json_delete(client, '/auth/session')
+    by_email = json_post(client, '/auth/login', {'email': 'admin@example.com', 'password': PASSWORD})
+    assert by_email.status_code == 200
+
+
 def test_login_errors_do_not_enumerate(client: Client) -> None:
     create_verified_user('alice', 'alice@example.com')
     wrong_password = json_post(client, '/auth/login', {'username': 'alice', 'password': 'wrong-pass-ok-9x'})

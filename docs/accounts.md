@@ -76,7 +76,7 @@ The Next.js admin accepts a superuser or a member of the `editor` group.
 
 Username rules match the `User` model: min 3, max 32, `[A-Za-z0-9._-]`, no `@`, unique ignoring case. Emails are unique ignoring case.
 
-Accounts created on the site must confirm their email (`ACCOUNT_EMAIL_VERIFICATION = 'mandatory'`). Team accounts created by a superuser in Django admin get a primary, verified `EmailAddress` for `user.email`, so they can sign in with a password without a verification mail. An email change in that admin save follows through.
+Accounts created on the site must confirm their email (`ACCOUNT_EMAIL_VERIFICATION = 'mandatory'`). Team accounts created by a superuser in Django admin get a primary, verified `EmailAddress` for `user.email`, so they can sign in with a password without a verification mail. An email change in that admin save follows through. `createsuperuser` accounts get that verified primary email too; a data migration applied the same to superusers created before this change.
 
 ## Google
 
