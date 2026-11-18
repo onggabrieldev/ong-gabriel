@@ -26,6 +26,8 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
             alt=""
             width={70}
             height={70}
+            sizes="70px"
+            unoptimized
             className="size-17.5 rounded-full object-cover"
           />
         ) : (

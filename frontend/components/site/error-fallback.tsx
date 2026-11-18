@@ -5,12 +5,12 @@ import { StatusScreen } from "@/components/site/status-screen";
 import { ButtonLink } from "@/components/ui/button-link";
 import { errorContent } from "@/lib/site/status-pages";
 
-type ErrorPageProps = {
+type ErrorFallbackProps = {
   error: Error & { digest?: string };
   retry: () => void;
 };
 
-export default function ErrorPage({ error, retry }: ErrorPageProps) {
+export function ErrorFallback({ error, retry }: ErrorFallbackProps) {
   useEffect(() => {
     console.error(error);
   }, [error]);
