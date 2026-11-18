@@ -29,7 +29,7 @@ Caddy never forwards `/django-admin/`. That path stays in Django for local use a
 | --- | --- |
 | `frontend/Dockerfile` | Builds the Next.js standalone server. Build context is the repository root. |
 | `backend/Dockerfile` | Builds the Django API. Build context is the repository root. |
-| `compose.yaml` | `db`, `api`, `web`, and `caddy`. Only Caddy publishes ports. |
+| `compose.yaml` | `db`, `api`, `web`, and `caddy`. Only Caddy publishes ports. `media-init` runs once before `api` and `caddy` and gives the media volume to the api user (uid 1000). Caddy's Alpine image has a root-owned `/media`, so a volume that Caddy mounts first is created root-owned, and uploads then fail with a 500. |
 | `deploy/Caddyfile` | TLS, security headers, `/api` and `/media` routing, the `www` redirect. |
 | `deploy/release.sh` | Runs on the VPS: sets `WEB_TAG` and `API_TAG`, pulls, migrates, restarts, waits for health. |
 | `deploy/backup.sh` | Daily `pg_dump`, 14 days in `/opt/ong-gabriel/backups`. |

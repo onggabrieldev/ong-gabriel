@@ -26,6 +26,25 @@ services:
     logging:
       driver: local
 
+  # The media volume can be created root-owned (Caddy's Alpine image ships a
+  # root-owned /media). Give it to the api user before api or Caddy start.
+  media-init:
+    image: ghcr.io/onggabrieldev/ong-gabriel/api:${API_TAG:-latest}
+    user: "0:0"
+    command: ["chown", "-R", "1000:1000", "/media"]
+    network_mode: none
+    restart: "no"
+    volumes:
+      - media:/media
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: local
+
   api:
     image: ghcr.io/onggabrieldev/ong-gabriel/api:${API_TAG:-latest}
     build:
@@ -39,6 +58,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      media-init:
+        condition: service_completed_successfully
     expose:
       - "8000"
     volumes:
@@ -83,6 +104,8 @@ services:
     image: caddy:2.10-alpine
     restart: unless-stopped
     depends_on:
+      media-init:
+        condition: service_completed_successfully
       web:
         condition: service_healthy
     environment:
