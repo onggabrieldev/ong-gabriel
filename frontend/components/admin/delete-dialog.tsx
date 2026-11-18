@@ -40,7 +40,7 @@ export function DeleteDialog({ dialogRef, dialogId, name, busy, onConfirm }: Del
             type="button"
             disabled={busy}
             onClick={onConfirm}
-            className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-alert px-4 text-label font-semibold text-cream transition-colors hover:bg-danger disabled:cursor-wait disabled:opacity-70"
+            className="inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-danger px-4 text-label font-semibold text-cream transition-colors hover:bg-danger-deep disabled:cursor-wait disabled:opacity-70"
           >
             Apagar
           </button>

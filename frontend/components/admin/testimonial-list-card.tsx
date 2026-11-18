@@ -110,7 +110,7 @@ export function TestimonialListCard({
           aria-haspopup="dialog"
           aria-controls={deleteDialogId}
           onClick={onDelete}
-          className="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-navy bg-canvas px-4 text-label font-semibold text-navy transition-colors hover:bg-sky"
+          className="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-danger bg-canvas px-4 text-label font-semibold text-danger transition-colors hover:bg-danger-soft"
         >
           Apagar
           <TrashIcon className="size-6" />
