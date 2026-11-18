@@ -116,7 +116,7 @@ crontab -e
 ```
 
 ```text
-0 3 * * * /opt/ong-gabriel/deploy/backup.sh
+0 3 * * * bash /opt/ong-gabriel/deploy/backup.sh >> /opt/ong-gabriel/backups/backup.log 2>&1
 ```
 
 Restore:

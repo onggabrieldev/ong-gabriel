@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Daily Postgres dump on the VPS. Cron: 0 3 * * * /opt/ong-gabriel/deploy/backup.sh
+# Daily Postgres dump on the VPS. Cron: 0 3 * * * bash /opt/ong-gabriel/deploy/backup.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
