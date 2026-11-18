@@ -48,7 +48,11 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-        return self.create_user(username, email, password, **extra_fields)
+        user = self.create_user(username, email, password, **extra_fields)
+        from ong_gabriel_api.accounts.emails import sync_verified_primary_email
+
+        sync_verified_primary_email(user)
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
