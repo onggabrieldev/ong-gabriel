@@ -76,15 +76,17 @@ export function TestimonialsManager() {
   }
 
   async function handleReorder(from: number, to: number) {
-    if (reorderingRef.current || to < 0 || to >= items.length) {
+    if (reorderingRef.current || from < 0 || to < 0 || from >= items.length || to >= items.length) {
       return;
     }
     reorderingRef.current = true;
     setReordering(true);
     const previous = items;
     const next = [...items];
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
+    const fromItem = next[from];
+    const toItem = next[to];
+    next[from] = toItem;
+    next[to] = fromItem;
     setItems(next);
     try {
       const saved = await reorderTestimonials(next.map((item) => item.id));
@@ -134,6 +136,9 @@ export function TestimonialsManager() {
     }
   }
 
+  const editingId = form?.mode === "edit" ? form.item.id : null;
+  const visibleItems = editingId === null ? items : items.filter((item) => item.id !== editingId);
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -180,21 +185,29 @@ export function TestimonialsManager() {
         <p className="text-body text-text">
           Nenhum depoimento ainda. Clique em Novo depoimento para adicionar o primeiro.
         </p>
-      ) : (
+      ) : visibleItems.length === 0 ? null : (
         <ul className="flex flex-col gap-4">
-          {items.map((item, index) => (
+          {visibleItems.map((item, index) => (
             <li key={item.id}>
               <TestimonialListCard
                 testimonial={item}
                 isFirst={index === 0}
-                isLast={index === items.length - 1}
+                isLast={index === visibleItems.length - 1}
                 reordering={reordering}
                 deleteDialogId={deleteDialogId}
                 onMoveUp={() => {
-                  void handleReorder(index, index - 1);
+                  const neighbour = visibleItems[index - 1];
+                  void handleReorder(
+                    items.findIndex((entry) => entry.id === item.id),
+                    items.findIndex((entry) => entry.id === neighbour?.id),
+                  );
                 }}
                 onMoveDown={() => {
-                  void handleReorder(index, index + 1);
+                  const neighbour = visibleItems[index + 1];
+                  void handleReorder(
+                    items.findIndex((entry) => entry.id === item.id),
+                    items.findIndex((entry) => entry.id === neighbour?.id),
+                  );
                 }}
                 onTogglePublish={() => {
                   void handleTogglePublish(item);
