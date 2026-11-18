@@ -28,7 +28,25 @@ def test_signup_closed_by_default(client: Client) -> None:
     assert not User.objects.filter(username='newbie').exists()
 
 
-@override_settings(PASSWORD_SIGNUP_ENABLED=True)
+@override_settings(SIGNUP_ENABLED=False, PASSWORD_SIGNUP_ENABLED=True)
+def test_password_signup_refused_when_signup_disabled(client: Client) -> None:
+    response = json_post(
+        client,
+        '/auth/signup',
+        {'username': 'newbie', 'email': 'newbie@example.com', 'password': PASSWORD},
+    )
+    assert response.status_code == 403
+    assert not User.objects.filter(username='newbie').exists()
+
+
+@override_settings(SIGNUP_ENABLED=False, PASSWORD_SIGNUP_ENABLED=True)
+def test_existing_account_login_with_signup_closed(client: Client) -> None:
+    create_verified_user('alice', 'alice@example.com')
+    response = json_post(client, '/auth/login', {'username': 'alice', 'password': PASSWORD})
+    assert response.status_code == 200
+
+
+@override_settings(SIGNUP_ENABLED=True, PASSWORD_SIGNUP_ENABLED=True)
 def test_signup_open_sends_verification_and_login_works(client: Client) -> None:
     signup = json_post(
         client,
@@ -49,7 +67,7 @@ def test_signup_open_sends_verification_and_login_works(client: Client) -> None:
     assert by_email.status_code == 200
 
 
-@override_settings(PASSWORD_SIGNUP_ENABLED=True)
+@override_settings(SIGNUP_ENABLED=True, PASSWORD_SIGNUP_ENABLED=True)
 def test_signup_enumeration_matches_existing_email(client: Client) -> None:
     create_verified_user('alice', 'alice@example.com')
     taken = json_post(
@@ -113,7 +131,7 @@ def test_config_lists_login_methods_and_closed_signup(client: Client) -> None:
     assert response.json()['data']['socialaccount']['providers'] == []
 
 
-@override_settings(PASSWORD_SIGNUP_ENABLED=True)
+@override_settings(SIGNUP_ENABLED=True, PASSWORD_SIGNUP_ENABLED=True)
 def test_config_reports_open_signup(client: Client) -> None:
     response = json_get(client, '/config')
     assert response.json()['data']['account']['is_open_for_signup'] is True
@@ -154,7 +172,7 @@ def test_password_change_for_logged_in_user(client: Client) -> None:
 
 
 def test_signup_username_rules(client: Client) -> None:
-    with override_settings(PASSWORD_SIGNUP_ENABLED=True):
+    with override_settings(SIGNUP_ENABLED=True, PASSWORD_SIGNUP_ENABLED=True):
         too_short = json_post(
             client,
             '/auth/signup',

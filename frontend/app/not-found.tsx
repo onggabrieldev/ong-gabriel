@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { StatusScreen } from "@/components/site/status-screen";
-import { ButtonLink } from "@/components/ui/button-link";
-import { notFoundContent } from "@/lib/site/status-pages";
+import { NotFoundScreen } from "@/components/site/not-found-screen";
+import { SiteChrome } from "@/components/site/site-chrome";
 
 export const metadata: Metadata = {
   title: "Página não encontrada",
@@ -9,11 +8,8 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <StatusScreen message={notFoundContent} code="404">
-      <ButtonLink href={notFoundContent.homeLink.href}>{notFoundContent.homeLink.label}</ButtonLink>
-      <ButtonLink href={notFoundContent.aboutLink.href} variant="outline">
-        {notFoundContent.aboutLink.label}
-      </ButtonLink>
-    </StatusScreen>
+    <SiteChrome>
+      <NotFoundScreen />
+    </SiteChrome>
   );
 }

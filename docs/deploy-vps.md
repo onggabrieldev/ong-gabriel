@@ -161,13 +161,50 @@ sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub  # on the VPS
 
 ## 8. Environment file
 
+Generate `SECRET_KEY` and `POSTGRES_PASSWORD` on the VPS, then paste them into the file:
+
+```sh
+openssl rand -base64 48 | tr -d '\n'; echo
+openssl rand -hex 32
+```
+
+Hex for `POSTGRES_PASSWORD` so it never needs URL-encoding inside `DATABASE_URL`. Empty optional keys use the code defaults.
+
 ```sh
 sudo -u deploy tee /opt/ong-gabriel/.env > /dev/null <<'EOF'
 SITE_DOMAIN=<domain without www>
 ACME_EMAIL=<email that gets certificate notices>
 WEB_TAG=
+API_TAG=
+ENVIRONMENT=prod
+DEBUG=false
+SECRET_KEY=<openssl rand -base64 48 | tr -d '\n'>
+DATABASE_URL=postgresql://<POSTGRES_USER>:<POSTGRES_PASSWORD>@db:5432/<POSTGRES_DB>
+POSTGRES_USER=<postgres role>
+POSTGRES_PASSWORD=<openssl rand -hex 32>
+POSTGRES_DB=<postgres database>
+ALLOWED_HOSTS=<domain>,api,127.0.0.1
+CSRF_TRUSTED_ORIGINS=https://<domain>
+FRONTEND_URL=https://<domain>
+SIGNUP_ENABLED=false
+PASSWORD_SIGNUP_ENABLED=false
+TRUSTED_PROXY_COUNT=1
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+EMAIL_USE_TLS=
+DEFAULT_FROM_EMAIL=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 EOF
 sudo chmod 600 /opt/ong-gabriel/.env
+sudo -u deploy mkdir -p /opt/ong-gabriel/backups
+sudo chmod 700 /opt/ong-gabriel/backups
 ```
+
+`DATABASE_URL` must use host `db` (the compose service). `ALLOWED_HOSTS` must include `api` for Next.js server-side calls and `127.0.0.1` for the api healthcheck. Compose sets `MEDIA_ROOT=/media` in the api container.
+
+After the first release, create a superuser and install the backup cron. See [[deploy#Django admin]] and [[deploy#Backups]].
 
 The other files arrive with the first release. See [[deploy#Release flow]].

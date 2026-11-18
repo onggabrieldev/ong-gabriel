@@ -1,0 +1,55 @@
+info:
+  name: Create testimonial
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/admin/testimonials/"
+  auth: inherit
+  body:
+    type: multipart-form
+    data:
+      - name: quote
+        type: text
+        value: A ONG mudou a minha vida.
+      - name: name
+        type: text
+        value: Maria
+      - name: role
+        type: text
+        value: Voluntária
+      - name: is_published
+        type: text
+        value: "true"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.getVar("csrfToken");
+        if (!token) {
+          throw new Error("Run auth/Session first. It sets the csrftoken cookie.");
+        }
+        req.setHeader("X-CSRFToken", token);
+    - type: after-response
+      code: |-
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+        if (res.status === 201 && res.body && res.body.id) {
+          bru.setVar("testimonialId", res.body.id);
+        }
+    - type: tests
+      code: |-
+        test("status is 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+settings:
+  encodeUrl: true

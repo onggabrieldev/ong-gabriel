@@ -46,7 +46,8 @@ Email verify and password reset succeed without opening a session (`ACCOUNT_LOGI
 | Setting | Default | Role |
 | --- | --- | --- |
 | `FRONTEND_URL` | required | Next.js origin, no trailing slash. Builds verification and reset links. |
-| `PASSWORD_SIGNUP_ENABLED` | `false` | When false, email and password signup is closed. Google signup stays open. |
+| `SIGNUP_ENABLED` | `false` | When false, every signup is closed, Google included. Login still works for accounts that already exist. |
+| `PASSWORD_SIGNUP_ENABLED` | `false` | When false, email and password signup is closed. Only applies when `SIGNUP_ENABLED` is true. |
 | `TRUSTED_PROXY_COUNT` | `0` | Trusted hops in `X-Forwarded-For`. Must equal the real number of proxies: `1` behind Caddy. Must be at least `1` outside `local`. |
 | `EMAIL_HOST` | `127.0.0.1` | SMTP host. Local default is Mailpit. Builds `MAILERS['default']`. |
 | `EMAIL_PORT` | `1025` | SMTP port. |
@@ -68,6 +69,10 @@ Frontend paths used in emails:
 ## Login
 
 Sign-in accepts the username or the email. A failed sign-in returns one generic error, so it does not reveal whether the username or email exists. Enumeration is also prevented on signup and password reset (`ACCOUNT_PREVENT_ENUMERATION`).
+
+With `SIGNUP_ENABLED=false` (the default), nobody can create an account through the API, including Google. Existing accounts still sign in. Create the first team accounts with `createsuperuser` or in Django admin. `PASSWORD_SIGNUP_ENABLED` only matters when signup is open.
+
+The Next.js admin accepts a superuser or a member of the `editor` group.
 
 Username rules match the `User` model: min 3, max 32, `[A-Za-z0-9._-]`, no `@`, unique ignoring case. Emails are unique ignoring case.
 
@@ -121,7 +126,7 @@ Dev only, in `compose.dev.yaml`. Image `axllent/mailpit:v1.33.1`. SMTP is `127.0
 
 ```text
 docker compose -f compose.dev.yaml up -d
-PASSWORD_SIGNUP_ENABLED=true uv run python backend/manage.py runserver 127.0.0.1:8000
+SIGNUP_ENABLED=true PASSWORD_SIGNUP_ENABLED=true uv run python backend/manage.py runserver 127.0.0.1:8000
 ```
 
 Open `http://127.0.0.1:8025/` or `http://127.0.0.1:8025/api/v1/messages` after a signup or password reset.

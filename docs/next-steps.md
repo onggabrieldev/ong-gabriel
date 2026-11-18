@@ -22,6 +22,7 @@ Where the Django migration stands and what comes next. The full branch plan and 
 
 - Branch 1, `feat-django-api`: Django and DRF, custom user, Postgres, `/health`. Merged in PR #14.
 - Branch 2, `feat-accounts-api`: allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles, `/api/v1/me/`. See [[accounts|Accounts]].
+- Branch `feat-admin-testimonials` (in review): testimonials API and Next.js admin, `SIGNUP_ENABLED`, API deploy behind Caddy, media volume, daily Postgres backups. See [[testimonials|Testimonials]] and [[deploy|Deploy]].
 
 ## Next: branch 3, `feat-auth-screens`
 
@@ -48,11 +49,12 @@ Things branch 3 must handle:
 > [!todo] Email, for production
 > A transactional email provider and DNS records. Without it, team password recovery does not work in production. Team password login still works.
 
-## For the API deploy (branch 11)
+## After the API is on the VPS
 
-- Set `FRONTEND_URL`, `TRUSTED_PROXY_COUNT=1`, the email keys, and the Google keys on the server.
-- Run `createcachetable` after `migrate`, or login rate limits fail.
+- Set `FRONTEND_URL`, `TRUSTED_PROXY_COUNT=1`, `ALLOWED_HOSTS` (public host, `api`, `127.0.0.1`), the email keys, and the Google keys on the server. See [[deploy|Deploy]].
+- `release.sh` already runs `migrate` and `createcachetable`. Login rate limits need that cache table.
 - Decide what password recovery does if no email provider exists yet.
+- Branch 11 still owns CSP and the site security review.
 
 ## Known local issue
 
