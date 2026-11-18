@@ -51,7 +51,7 @@ export function AdminShell({ children }: AdminShellProps) {
 
   if (!user) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-cream">
+      <div className="flex flex-1 items-center justify-center bg-cream">
         <p role="status" className="text-body text-muted">
           Carregando painel…
         </p>
@@ -60,7 +60,7 @@ export function AdminShell({ children }: AdminShellProps) {
   }
 
   return (
-    <div className="flex min-h-full flex-col bg-canvas lg:flex-row">
+    <div className="flex flex-1 flex-col bg-canvas lg:flex-row">
       <AdminSidebar
         username={user.username}
         menuOpen={menuOpen}

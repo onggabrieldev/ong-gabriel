@@ -21,7 +21,7 @@ export function AdminSidebar({
   onLogout,
 }: AdminSidebarProps) {
   return (
-    <aside className="flex flex-col bg-cream lg:min-h-full lg:w-90 lg:shrink-0 lg:shadow-header">
+    <aside className="flex flex-col bg-cream lg:sticky lg:top-0 lg:h-dvh lg:w-90 lg:shrink-0 lg:overflow-y-auto lg:shadow-header">
       <div className="flex items-center gap-3 px-4 py-4 lg:px-4 lg:pt-4">
         <Link
           href="/admin/depoimentos"
