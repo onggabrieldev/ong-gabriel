@@ -54,7 +54,7 @@ Variables:
 
 ## Package visibility
 
-The first release creates the package `ghcr.io/onggabrieldev/ong-gabriel/web` under the organization's **Packages**. It is private by default. Deploy works either way, because `release.sh` logs in with the job token.
+The first release creates the packages `ghcr.io/onggabrieldev/ong-gabriel/web` and `ghcr.io/onggabrieldev/ong-gabriel/api` under the organization's **Packages**. They are private by default. Deploy works either way, because `release.sh` logs in with the job token.
 
 To pull by hand on the VPS, make the package public (**Package settings → Change visibility**) or run `docker login ghcr.io` with a classic token that has only `read:packages`. The image holds the public site and no secrets.
 

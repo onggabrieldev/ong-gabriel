@@ -89,6 +89,14 @@ Product context is in [[CONTEXT|Product context]]. Comment rules are in [[commen
 - Login rate limits are **allauth's**, stored in a shared Django cache. The database cache comes first. Redis only if it becomes necessary. The client IP comes from the trusted proxy count, since Caddy sits in front.
 - Local email goes to **Mailpit** in `compose.dev.yaml`.
 
+### Settled on 2026-11-17 for the testimonials admin
+
+- Home testimonials are managed from a Next.js admin. This branch ships to production: the admin with the testimonials editor, and the API deploy that it needs.
+- Media: files live in a Docker volume on the VPS and Caddy serves them at `/media/`. Uploads accept JPEG, PNG, or WebP up to 5 MB. Django re-encodes every portrait to WebP 256x256 (center crop), which strips EXIF and any metadata. No SVG.
+- Signup lock: a new flag `SIGNUP_ENABLED` (default `false`) closes every signup, Google included. When it is false, login works only for accounts that already exist (created by hand with `createsuperuser` or in Django admin). `PASSWORD_SIGNUP_ENABLED` keeps its meaning but only applies when `SIGNUP_ENABLED` is true. The admin panel accepts a superuser or a member of the `editor` group.
+- The Django admin is not exposed in production: Caddy forwards only `/api/*` and `/media/*` to Django. `/django-admin/` stays routed in Django (reachable locally and through an SSH tunnel), but Caddy never sends it.
+- Backups: `deploy/backup.sh` runs a daily `pg_dump` through cron on the VPS, keeps 14 days in a folder on the VPS, and the docs explain the cron line and how to restore. Off-site copies come later.
+
 ### Workflow
 
 - Implementation is done by Orca workers running Grok 4.6. The coordinator reviews their work.
@@ -104,7 +112,6 @@ These defaults are written into the specs. Confirm or change them before the bra
 
 | Topic | Proposal | Branch |
 | --- | --- | --- |
-| Media | Local Docker volume served by Caddy. Uploads checked for type and size. No SVG uploads. | 4 |
 | Post body | A structured format rendered without `dangerouslySetInnerHTML`, such as Tiptap JSON mapped to the current block types. The Figma editor has a rich text toolbar. **Decide before branch 7.** | 4, 7 |
 | Comment target | Plain foreign key to the post. Events can be added later by migration. | 9 |
 | Comment format | Plain text only, rendered as text. No HTML or Markdown. | 9 |
@@ -119,6 +126,7 @@ These defaults are written into the specs. Confirm or change them before the bra
 | --- | --- | --- | --- |
 | 1 | `feat-django-api` | Django and DRF in place of FastAPI, custom user, Postgres for local dev, `/health`, CI, Bruno, `django` skill, updated docs | Merged |
 | 2 | `feat-accounts-api` | allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles | Merged |
+| — | `feat-admin-testimonials` | Testimonials API and admin, signup lock, API deploy, backups. Moves part of branches 5, 8, and 11 forward. | In review |
 | 3 | `feat-auth-screens` | Sign in, sign up, email verification, and password reset screens in Next.js | Next |
 | 4 | `feat-content-api` | Blog, categories, and media with checked uploads | Waiting |
 | 5 | `feat-events-api` | Events, addresses, types, gallery, testimonials, event registration | Waiting |

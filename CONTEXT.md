@@ -17,7 +17,7 @@ The note map is [[docs/Home|Docs]]. Where the work stands and what comes next: [
 - `frontend/` is Next.js (App Router) and stays. Public copy and page structure live here.
 - `backend/` is Django and Django REST Framework. The package name is `ong-gabriel-api`. The import path is `ong_gabriel_api`.
 
-`pnpm dev` runs the API on `127.0.0.1:8000` and the site on `localhost:3000`.
+`pnpm dev` runs the API on `127.0.0.1:8000` and the site on `localhost:3000`. Production deploys the API behind Caddy at `/api/*`, with portraits at `/media/*`. See [[docs/deploy|Deploy]].
 
 ## What stays dynamic
 
@@ -29,7 +29,7 @@ The API is for records that change and are shared across the site:
 - blog posts and categories
 - comments on posts, and later maybe on events and the agenda — see [[docs/comments|Comments]]
 - events, addresses, and event types
-- testimonials, while they stay editable
+- testimonials, from the API — see [[docs/testimonials|Testimonials]]
 - media attached to those records
 - editor authentication
 - donations, once that flow exists
