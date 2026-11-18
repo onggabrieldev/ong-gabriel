@@ -8,6 +8,7 @@ type TestimonialListCardProps = {
   testimonial: AdminTestimonial;
   isFirst: boolean;
   isLast: boolean;
+  reordering: boolean;
   deleteDialogId: string;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -20,6 +21,7 @@ export function TestimonialListCard({
   testimonial,
   isFirst,
   isLast,
+  reordering,
   deleteDialogId,
   onMoveUp,
   onMoveDown,
@@ -72,7 +74,7 @@ export function TestimonialListCard({
       <div className="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
-          disabled={isFirst}
+          disabled={reordering || isFirst}
           onClick={onMoveUp}
           className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-navy bg-canvas text-navy transition-colors hover:bg-sky disabled:cursor-not-allowed disabled:opacity-40"
         >
@@ -81,7 +83,7 @@ export function TestimonialListCard({
         </button>
         <button
           type="button"
-          disabled={isLast}
+          disabled={reordering || isLast}
           onClick={onMoveDown}
           className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-navy bg-canvas text-navy transition-colors hover:bg-sky disabled:cursor-not-allowed disabled:opacity-40"
         >

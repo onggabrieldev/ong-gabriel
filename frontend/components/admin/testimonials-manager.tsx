@@ -26,6 +26,8 @@ export function TestimonialsManager() {
   const [form, setForm] = useState<FormState | null>(null);
   const [pendingDelete, setPendingDelete] = useState<AdminTestimonial | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [reordering, setReordering] = useState(false);
+  const reorderingRef = useRef(false);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
@@ -74,6 +76,11 @@ export function TestimonialsManager() {
   }
 
   async function handleReorder(from: number, to: number) {
+    if (reorderingRef.current || to < 0 || to >= items.length) {
+      return;
+    }
+    reorderingRef.current = true;
+    setReordering(true);
     const previous = items;
     const next = [...items];
     const [moved] = next.splice(from, 1);
@@ -85,6 +92,9 @@ export function TestimonialsManager() {
     } catch (error) {
       setItems(previous);
       fail(error, "Não foi possível reordenar os depoimentos.");
+    } finally {
+      reorderingRef.current = false;
+      setReordering(false);
     }
   }
 
@@ -178,6 +188,7 @@ export function TestimonialsManager() {
                 testimonial={item}
                 isFirst={index === 0}
                 isLast={index === items.length - 1}
+                reordering={reordering}
                 deleteDialogId={deleteDialogId}
                 onMoveUp={() => {
                   void handleReorder(index, index - 1);
