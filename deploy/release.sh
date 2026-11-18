@@ -13,16 +13,24 @@ fi
 
 cd "$(dirname "$0")/.."
 
-# The tag lives in .env so a manual `docker compose up -d` keeps the same release.
-if grep -q '^WEB_TAG=' .env; then
-  sed -i "s/^WEB_TAG=.*/WEB_TAG=$tag/" .env
-else
-  echo "WEB_TAG=$tag" >> .env
-fi
+set_tag() {
+  local key="$1"
+  if grep -q "^${key}=" .env; then
+    sed -i "s/^${key}=.*/${key}=$tag/" .env
+  else
+    echo "${key}=$tag" >> .env
+  fi
+}
+
+# The tags live in .env so a manual `docker compose up -d` keeps the same release.
+set_tag WEB_TAG
+set_tag API_TAG
 
 docker login ghcr.io --username "$ghcr_user" --password-stdin
 trap 'docker logout ghcr.io >/dev/null' EXIT
 
 docker compose pull
+docker compose run --rm api python manage.py migrate --noinput
+docker compose run --rm api python manage.py createcachetable
 docker compose up -d --remove-orphans --wait
 docker image prune -f
