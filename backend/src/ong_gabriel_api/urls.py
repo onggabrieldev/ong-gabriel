@@ -1,5 +1,6 @@
 from allauth.socialaccount.providers.google.views import oauth2_callback as google_callback
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -17,6 +18,7 @@ def build_urlpatterns() -> list[URLPattern | URLResolver]:
         path('_allauth/', include('allauth.headless.urls')),
         path('accounts/google/login/callback/', google_callback, name='google_callback'),
         path('me/', MeView.as_view(), name='me'),
+        path('', include('ong_gabriel_api.testimonials.urls')),
     ]
     if settings.ENVIRONMENT != 'prod':
         api_v1.extend(
@@ -25,11 +27,14 @@ def build_urlpatterns() -> list[URLPattern | URLResolver]:
                 path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
             ]
         )
-    return [
+    patterns: list[URLPattern | URLResolver] = [
         path('health', health, name='health'),
         path('django-admin/', admin.site.urls),
         path('api/v1/', include(api_v1)),
     ]
+    if settings.ENVIRONMENT == 'local':
+        patterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    return patterns
 
 
 urlpatterns = build_urlpatterns()

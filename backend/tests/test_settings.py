@@ -2,7 +2,12 @@ import pytest
 from django.test import Client, override_settings
 from pydantic import ValidationError
 
-from ong_gabriel_api.settings import AppSettings, mailers_from_settings, security_settings
+from ong_gabriel_api.settings import (
+    _DEFAULT_MEDIA_ROOT,
+    AppSettings,
+    mailers_from_settings,
+    security_settings,
+)
 
 
 def _settings(**overrides: object) -> AppSettings:
@@ -27,6 +32,31 @@ def test_debug_refused_outside_local(environment: str) -> None:
 
 def test_secret_key_required(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv('SECRET_KEY', raising=False)
+    with pytest.raises(ValidationError):
+        AppSettings(
+            _env_file=None,
+            ENVIRONMENT='local',
+            DATABASE_URL='postgresql://ong_gabriel:ong_gabriel@127.0.0.1:5432/ong_gabriel',
+            ALLOWED_HOSTS=['localhost'],
+            CSRF_TRUSTED_ORIGINS=['http://localhost:3000'],
+            FRONTEND_URL='http://localhost:3000',
+        )
+
+
+def test_empty_env_values_use_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('EMAIL_PORT', '')
+    monkeypatch.setenv('EMAIL_USE_TLS', '')
+    monkeypatch.setenv('MEDIA_ROOT', '')
+    monkeypatch.setenv('SIGNUP_ENABLED', '')
+    settings = _settings()
+    assert settings.EMAIL_PORT == 1025
+    assert settings.EMAIL_USE_TLS is False
+    assert settings.MEDIA_ROOT == _DEFAULT_MEDIA_ROOT
+    assert settings.SIGNUP_ENABLED is False
+
+
+def test_empty_secret_key_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('SECRET_KEY', '')
     with pytest.raises(ValidationError):
         AppSettings(
             _env_file=None,
@@ -72,6 +102,18 @@ def test_health_exempt_from_ssl_redirect(client: Client) -> None:
     assert health.status_code == 200
     admin = client.get('/django-admin/')
     assert admin.status_code == 301
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=True,
+    SECURE_REDIRECT_EXEMPT=[r'^health$'],
+    ALLOWED_HOSTS=['127.0.0.1', 'testserver'],
+)
+def test_health_loopback_host_with_ssl_redirect(client: Client) -> None:
+    client.handler.load_middleware()
+    response = client.get('/health', HTTP_HOST='127.0.0.1')
+    assert response.status_code == 200
+    assert response.json() == {'status': 'ok'}
 
 
 def test_frontend_url_strips_trailing_slash() -> None:

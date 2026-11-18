@@ -10,6 +10,8 @@ CACHE_TABLE = 'django_cache'
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
+_DEFAULT_MEDIA_ROOT = _BACKEND_DIR / 'media'
+_UPLOAD_MAX_BYTES = 6 * 1024 * 1024
 
 
 class SecuritySettings(TypedDict):
@@ -43,6 +45,7 @@ class AppSettings(BaseSettings):
         env_file=_REPO_ROOT / '.env',
         env_file_encoding='utf-8',
         extra='ignore',
+        env_ignore_empty=True,
     )
 
     ENVIRONMENT: Environment
@@ -52,7 +55,9 @@ class AppSettings(BaseSettings):
     ALLOWED_HOSTS: Annotated[list[str], NoDecode] = Field(min_length=1)
     CSRF_TRUSTED_ORIGINS: Annotated[list[str], NoDecode] = Field(min_length=1)
     FRONTEND_URL: str
+    SIGNUP_ENABLED: bool = False
     PASSWORD_SIGNUP_ENABLED: bool = False
+    MEDIA_ROOT: Path = _DEFAULT_MEDIA_ROOT
     TRUSTED_PROXY_COUNT: int = Field(default=0, ge=0)
     EMAIL_HOST: str = '127.0.0.1'
     EMAIL_PORT: int = 1025
@@ -187,6 +192,7 @@ ENVIRONMENT = env.ENVIRONMENT
 ALLOWED_HOSTS = env.ALLOWED_HOSTS
 CSRF_TRUSTED_ORIGINS = env.CSRF_TRUSTED_ORIGINS
 FRONTEND_URL = env.FRONTEND_URL
+SIGNUP_ENABLED = env.SIGNUP_ENABLED
 PASSWORD_SIGNUP_ENABLED = env.PASSWORD_SIGNUP_ENABLED
 TRUSTED_PROXY_COUNT = env.TRUSTED_PROXY_COUNT
 
@@ -200,6 +206,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'ong_gabriel_api.accounts',
+    'ong_gabriel_api.testimonials',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -267,6 +274,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = _BACKEND_DIR / 'staticfiles'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = env.MEDIA_ROOT
+DATA_UPLOAD_MAX_MEMORY_SIZE = _UPLOAD_MAX_BYTES
+FILE_UPLOAD_MAX_MEMORY_SIZE = _UPLOAD_MAX_BYTES
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

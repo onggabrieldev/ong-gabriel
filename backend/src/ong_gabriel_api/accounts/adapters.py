@@ -18,6 +18,8 @@ def _text(value: object) -> str:
 
 class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest) -> bool:
+        if not settings.SIGNUP_ENABLED:
+            return False
         return bool(settings.PASSWORD_SIGNUP_ENABLED)
 
     def validation_error(self, code: str, *args: object) -> ValidationError:
@@ -28,7 +30,7 @@ class AccountAdapter(DefaultAccountAdapter):
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
-        return True
+        return bool(settings.SIGNUP_ENABLED)
 
     def authenticate_by_email(self, sociallogin: SocialLogin) -> tuple[User, str] | None:
         # allauth falls back to an unverified local address, which lets anyone who parks

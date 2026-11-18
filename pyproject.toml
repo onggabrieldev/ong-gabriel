@@ -34,6 +34,7 @@ env = [
     "D:ALLOWED_HOSTS=localhost,127.0.0.1,testserver",
     "D:CSRF_TRUSTED_ORIGINS=http://127.0.0.1:3000,http://localhost:3000",
     "D:FRONTEND_URL=http://localhost:3000",
+    "D:SIGNUP_ENABLED=false",
     "D:PASSWORD_SIGNUP_ENABLED=false",
     "D:TRUSTED_PROXY_COUNT=0",
     "D:GOOGLE_CLIENT_ID=",

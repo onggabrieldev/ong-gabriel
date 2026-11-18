@@ -65,7 +65,7 @@ def _complete_google_callback(client: Client, userinfo: dict[str, str | bool]) -
         )
 
 
-@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS, PASSWORD_SIGNUP_ENABLED=False)
+@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS, SIGNUP_ENABLED=True, PASSWORD_SIGNUP_ENABLED=False)
 def test_google_signup_creates_user_with_generated_username(client: Client) -> None:
     response = _complete_google_callback(
         client,
@@ -81,7 +81,7 @@ def test_google_signup_creates_user_with_generated_username(client: Client) -> N
     assert me.json()['username'] == user.username
 
 
-@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS)
+@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS, SIGNUP_ENABLED=True)
 def test_google_second_login_reuses_account(client: Client) -> None:
     _complete_google_callback(client, google_userinfo())
     client.logout()
@@ -98,7 +98,14 @@ def test_google_connects_existing_verified_email(client: Client) -> None:
     assert SocialAccount.objects.filter(user=existing, provider='google').exists()
 
 
-@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS)
+@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS, SIGNUP_ENABLED=False, PASSWORD_SIGNUP_ENABLED=True)
+def test_google_signup_refused_when_signup_closed(client: Client) -> None:
+    _complete_google_callback(client, google_userinfo(email='newgoogle@example.com', sub='google-new'))
+    assert not User.objects.filter(email='newgoogle@example.com').exists()
+    assert not SocialAccount.objects.filter(provider='google', uid='google-new').exists()
+
+
+@override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_PROVIDERS, SIGNUP_ENABLED=True)
 def test_google_login_ignores_unverified_local_email(client: Client) -> None:
     attacker = User.objects.create_user('attacker', 'attacker@example.com', PASSWORD)
     EmailAddress.objects.create(user=attacker, email='victim@example.com', verified=False, primary=False)
