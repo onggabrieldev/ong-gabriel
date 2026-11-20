@@ -28,7 +28,7 @@ The API is for records that change and are shared across the site:
 
 - blog posts and categories
 - comments on posts, and later maybe on events and the agenda — see [[docs/comments|Comments]]
-- agenda events, from the API — see [[docs/events|Agenda]]. Gallery records and registrations come later.
+- agenda events, from the API — see [[docs/events|Agenda]]. Gallery albums come from the API — see [[docs/gallery|Gallery]]. Registrations come later.
 - testimonials, from the API — see [[docs/testimonials|Testimonials]]
 - home activities ("O que fazemos"), from the API — see [[docs/activities|Activities]]
 - media attached to those records

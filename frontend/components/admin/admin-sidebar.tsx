@@ -10,6 +10,7 @@ const adminNav = [
   { href: "/admin/depoimentos", label: "Depoimentos" },
   { href: "/admin/atividades", label: "Atividades" },
   { href: "/admin/agenda", label: "Agenda" },
+  { href: "/admin/galeria", label: "Galeria" },
 ] as const;
 
 type AdminSidebarProps = {

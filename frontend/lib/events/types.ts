@@ -36,6 +36,10 @@ export type PastEvent = {
   location: EventLocation;
   heldOn: string;
   cover: MediaAsset;
+  photoCount: number;
+};
+
+export type PastEventDetail = PastEvent & {
   photos: readonly MediaAsset[];
 };
 

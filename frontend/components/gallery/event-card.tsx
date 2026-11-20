@@ -23,6 +23,7 @@ export function EventCard({ event }: EventCardProps) {
           width={event.cover.width}
           height={event.cover.height}
           sizes="(min-width: 64rem) 24rem, 100vw"
+          unoptimized
           className="h-48 w-full object-cover"
         />
         <div className="flex flex-1 flex-col gap-4 px-6 py-6.5">

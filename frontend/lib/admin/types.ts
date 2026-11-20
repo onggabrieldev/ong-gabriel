@@ -51,6 +51,33 @@ export type AdminEvent = {
   updated_at: string;
 };
 
+export type AdminGalleryAlbum = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  event_type: string;
+  location: string;
+  held_on: string;
+  cover: string;
+  cover_alt: string;
+  photo_count: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AdminGalleryPhoto = {
+  id: string;
+  image: string;
+  image_alt: string;
+  width: number;
+  height: number;
+  position: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AdminApiError = {
   message: string;
   fields: Record<string, string[]>;

@@ -1,0 +1,24 @@
+info:
+  name: List album photos
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/admin/gallery/:albumId/photos/"
+  auth: inherit
+  params:
+    - name: albumId
+      type: path
+      value: "{{galleryAlbumId}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true

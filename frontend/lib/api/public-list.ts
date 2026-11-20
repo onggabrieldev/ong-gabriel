@@ -55,3 +55,35 @@ export async function fetchPublicList<T>(
     return [];
   }
 }
+
+// Reads one public record. A 404 yields null quietly; any other failure is
+// logged once and also yields null, so the page shows its not-found screen.
+export async function fetchPublicItem<T>(
+  path: string,
+  label: string,
+  parse: (value: unknown) => T | null,
+): Promise<T | null> {
+  try {
+    const response = await fetch(`${apiOrigin()}${path}`, {
+      headers: { "X-Forwarded-Proto": "https" },
+      signal: AbortSignal.timeout(fetchTimeoutMs),
+    });
+
+    if (response.status === 404) {
+      return null;
+    }
+    if (!response.ok) {
+      logFailure(label, `HTTP ${response.status}`);
+      return null;
+    }
+
+    const item = parse(await response.json());
+    if (item === null) {
+      logFailure(label, "Unexpected response shape");
+    }
+    return item;
+  } catch (error) {
+    logFailure(label, error);
+    return null;
+  }
+}
