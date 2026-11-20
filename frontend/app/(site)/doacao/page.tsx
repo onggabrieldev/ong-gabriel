@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { ContactSection } from "@/components/contact/contact-section";
 import { HeroSection } from "@/components/donation/hero-section";
 import { ImpactSection } from "@/components/donation/impact-section";
 import { OptionsSection } from "@/components/donation/options-section";
-import { ContactSection } from "@/components/home/contact-section";
 import { getDonationPage } from "@/lib/donation/get-donation-page";
 
 export const metadata: Metadata = {

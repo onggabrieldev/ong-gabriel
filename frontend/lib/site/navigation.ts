@@ -24,7 +24,7 @@ export const mainNav = [
   { id: "about", label: "Sobre", href: "/sobre" },
   { id: "agenda", label: "Agenda", href: "/agenda" },
   { id: "blog", label: "Blog", href: "/blog" },
-  { id: "contact", label: "Contato", href: "/#contato" },
+  { id: "contact", label: "Contato", href: "/contato" },
 ] as const satisfies readonly SiteNavItem[];
 
 export const donationLink = {

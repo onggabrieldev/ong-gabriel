@@ -2,10 +2,11 @@
 
 import { type FormEvent, useId, useState } from "react";
 import { ArrowRightIcon, SocialIcon } from "@/components/icons/icon";
-import type { ContactContent, ContactFieldId } from "@/lib/home/types";
+import type { ContactContent, ContactFieldId } from "@/lib/contact/types";
 
 type ContactSectionProps = {
   contact: ContactContent;
+  headingLevel?: "h1" | "h2";
 };
 
 type ContactValues = Record<ContactFieldId, string>;
@@ -17,7 +18,8 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export function ContactSection({ contact }: ContactSectionProps) {
+export function ContactSection({ contact, headingLevel = "h2" }: ContactSectionProps) {
+  const Title = headingLevel;
   const formId = useId();
   const statusId = useId();
   const [values, setValues] = useState<ContactValues>(emptyValues);
@@ -57,9 +59,9 @@ export function ContactSection({ contact }: ContactSectionProps) {
     <section id="contato" aria-labelledby="contact-title" className="bg-canvas scroll-mt-24">
       <div className="mx-auto grid max-w-360 gap-10 px-4 py-16 lg:grid-cols-2 lg:px-20 lg:py-28">
         <div>
-          <h2 id="contact-title" className="text-title font-bold text-ink-soft">
+          <Title id="contact-title" className="text-title font-bold text-ink-soft">
             {contact.title}
-          </h2>
+          </Title>
           <p className="mt-6 max-w-xl text-body text-text">{contact.description}</p>
           <ul className="mt-8 flex gap-4">
             {contact.social.map((profile) => (

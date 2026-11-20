@@ -1,3 +1,4 @@
+import { contactPageContent } from "@/lib/contact/content";
 import type { DonationPageContent } from "@/lib/donation/types";
 import { homePageContent } from "@/lib/home/content";
 
@@ -41,7 +42,7 @@ export const donationPageContent: DonationPageContent = {
       ],
     },
   },
-  contact: homePageContent.contact,
+  contact: contactPageContent.contact,
   impact: {
     heading: "Nosso impacto",
     stats: homePageContent.impact.stats,

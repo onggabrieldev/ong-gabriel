@@ -99,26 +99,6 @@ export type TestimonialsContent = {
   items: readonly Testimonial[];
 };
 
-export type ContactFieldId = "name" | "email" | "message";
-
-export type ContactField = {
-  id: ContactFieldId;
-  label: string;
-  placeholder: string;
-  hint: string;
-  requiredMessage: string;
-};
-
-export type ContactContent = {
-  title: string;
-  description: string;
-  fields: readonly ContactField[];
-  submitLabel: string;
-  inboxEmail: string | null;
-  unavailableMessage: string;
-  social: readonly SocialProfile[];
-};
-
 export type TributeContent = {
   heading: string;
   quote: string;
@@ -135,6 +115,5 @@ export type HomePageContent = {
   impact: ImpactContent;
   volunteer: VolunteerContent;
   testimonials: TestimonialsContent;
-  contact: ContactContent;
   tribute: TributeContent;
 };
