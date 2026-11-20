@@ -19,9 +19,9 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
         <h2 id="testimonials-title" className="sr-only">
           {testimonials.heading}
         </h2>
-        <ul className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+        <ul className="flex flex-wrap justify-center gap-6 lg:gap-8">
           {testimonials.items.map((testimonial) => (
-            <li key={testimonial.id}>
+            <li key={testimonial.id} className="w-full lg:w-[calc((100%_-_--spacing(16))/3)]">
               <TestimonialCard testimonial={testimonial} />
             </li>
           ))}
