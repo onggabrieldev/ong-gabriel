@@ -186,6 +186,8 @@ export function EventsSection({
     periodId: applied.periodo,
   });
   const visible = expanded ? filtered : filtered.slice(0, copy.initialCount);
+  const hasEvents = events.length > 0;
+  const emptyMessage = hasEvents ? copy.emptyMessage : copy.noEventsMessage;
 
   function writeFilters(next: AgendaAppliedFilters) {
     const params = new URLSearchParams();
@@ -222,53 +224,55 @@ export function EventsSection({
   return (
     <section aria-labelledby="upcoming-events-title" className="bg-canvas">
       <div className="mx-auto flex max-w-360 flex-col gap-8 px-4 py-12 lg:gap-11 lg:px-20 lg:pt-20 lg:pb-32">
-        <form
-          className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6"
-          onSubmit={handleFilter}
-        >
-          <FilterSelect
-            id={`${formId}-tipo`}
-            label={copy.filters.typeLabel}
-            placeholder={copy.filters.placeholder}
-            value={draft.tipo}
-            options={types}
-            onChange={(tipo) => setDraft((current) => ({ ...current, tipo }))}
-          />
-          <FilterSelect
-            id={`${formId}-local`}
-            label={copy.filters.locationLabel}
-            placeholder={copy.filters.placeholder}
-            value={draft.local}
-            options={locations}
-            onChange={(local) => setDraft((current) => ({ ...current, local }))}
-          />
-          <FilterSelect
-            id={`${formId}-periodo`}
-            label={copy.filters.periodLabel}
-            placeholder={copy.filters.placeholder}
-            value={draft.periodo}
-            options={periods}
-            onChange={(periodo) => setDraft((current) => ({ ...current, periodo }))}
-          />
-          <div className="flex w-full gap-6 lg:w-auto lg:flex-none">
-            <button
-              type="submit"
-              className="inline-flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep lg:w-50.5 lg:flex-none"
-            >
-              {copy.filters.applyLabel}
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center rounded-full border border-navy bg-canvas px-4 text-label font-semibold text-navy transition-colors hover:bg-sky lg:w-50.5 lg:flex-none"
-              onClick={() => {
-                setDraft(emptyFilters);
-                writeFilters(emptyFilters);
-              }}
-            >
-              {copy.filters.clearLabel}
-            </button>
-          </div>
-        </form>
+        {hasEvents ? (
+          <form
+            className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6"
+            onSubmit={handleFilter}
+          >
+            <FilterSelect
+              id={`${formId}-tipo`}
+              label={copy.filters.typeLabel}
+              placeholder={copy.filters.placeholder}
+              value={draft.tipo}
+              options={types}
+              onChange={(tipo) => setDraft((current) => ({ ...current, tipo }))}
+            />
+            <FilterSelect
+              id={`${formId}-local`}
+              label={copy.filters.locationLabel}
+              placeholder={copy.filters.placeholder}
+              value={draft.local}
+              options={locations}
+              onChange={(local) => setDraft((current) => ({ ...current, local }))}
+            />
+            <FilterSelect
+              id={`${formId}-periodo`}
+              label={copy.filters.periodLabel}
+              placeholder={copy.filters.placeholder}
+              value={draft.periodo}
+              options={periods}
+              onChange={(periodo) => setDraft((current) => ({ ...current, periodo }))}
+            />
+            <div className="flex w-full gap-6 lg:w-auto lg:flex-none">
+              <button
+                type="submit"
+                className="inline-flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center rounded-full bg-sky-mid px-4 text-label font-semibold text-indigo-deep transition-colors hover:bg-sky-deep lg:w-50.5 lg:flex-none"
+              >
+                {copy.filters.applyLabel}
+              </button>
+              <button
+                type="button"
+                className="inline-flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center rounded-full border border-navy bg-canvas px-4 text-label font-semibold text-navy transition-colors hover:bg-sky lg:w-50.5 lg:flex-none"
+                onClick={() => {
+                  setDraft(emptyFilters);
+                  writeFilters(emptyFilters);
+                }}
+              >
+                {copy.filters.clearLabel}
+              </button>
+            </div>
+          </form>
+        ) : null}
 
         <div className="flex flex-col gap-11">
           <h2 id="upcoming-events-title" className="text-title font-bold text-ink">
@@ -278,7 +282,7 @@ export function EventsSection({
             role="status"
             className={`text-body text-text ${filtered.length === 0 ? "" : "sr-only"}`}
           >
-            {filtered.length === 0 ? copy.emptyMessage : ""}
+            {filtered.length === 0 ? emptyMessage : ""}
           </p>
           {filtered.length > 0 ? (
             <ul className="flex flex-col gap-11">

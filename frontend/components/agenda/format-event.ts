@@ -94,16 +94,24 @@ export const accentClasses: Record<
   },
 };
 
-export function matchesPeriod(startsAt: string, periodId: string, now = new Date()): boolean {
+// An event in progress counts as upcoming, like on the API: it stays listed
+// until it ends.
+export function matchesPeriod(
+  startsAt: string,
+  endsAt: string,
+  periodId: string,
+  now = new Date(),
+): boolean {
   const start = new Date(startsAt);
+  const end = new Date(endsAt);
   const dayMs = 24 * 60 * 60 * 1000;
 
   if (periodId === "next-30-days") {
-    return start >= now && start <= new Date(now.getTime() + 30 * dayMs);
+    return end >= now && start <= new Date(now.getTime() + 30 * dayMs);
   }
 
   if (periodId === "next-90-days") {
-    return start >= now && start <= new Date(now.getTime() + 90 * dayMs);
+    return end >= now && start <= new Date(now.getTime() + 90 * dayMs);
   }
 
   if (periodId === "this-year") {
@@ -126,7 +134,7 @@ export function filterUpcomingEvents(
     if (filters.locationId && event.location.id !== filters.locationId) {
       return false;
     }
-    if (filters.periodId && !matchesPeriod(event.startsAt, filters.periodId)) {
+    if (filters.periodId && !matchesPeriod(event.startsAt, event.endsAt, filters.periodId)) {
       return false;
     }
     return true;

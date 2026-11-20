@@ -20,6 +20,7 @@ def build_urlpatterns() -> list[URLPattern | URLResolver]:
         path('me/', MeView.as_view(), name='me'),
         path('', include('ong_gabriel_api.testimonials.urls')),
         path('', include('ong_gabriel_api.activities.urls')),
+        path('', include('ong_gabriel_api.events.urls')),
     ]
     if settings.ENVIRONMENT != 'prod':
         api_v1.extend(

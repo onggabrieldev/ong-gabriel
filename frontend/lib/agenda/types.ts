@@ -24,6 +24,7 @@ export type AgendaEventsCopy = {
   heading: string;
   moreLabel: string;
   emptyMessage: string;
+  noEventsMessage: string;
   initialCount: number;
   detailsLabel: string;
   calendarLabel: string;

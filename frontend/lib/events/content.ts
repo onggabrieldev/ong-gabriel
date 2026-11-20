@@ -1,10 +1,4 @@
-import type {
-  EventLocation,
-  EventPeriod,
-  EventType,
-  PastEvent,
-  UpcomingEvent,
-} from "@/lib/events/types";
+import type { EventLocation, EventPeriod, EventType, PastEvent } from "@/lib/events/types";
 import type { MediaAsset } from "@/lib/home/types";
 
 // Placeholder records. The API replaces this file; keep the shapes in types.ts.
@@ -32,70 +26,6 @@ export const eventPeriods = [
   { id: "next-90-days", label: "Próximos 90 dias" },
   { id: "this-year", label: "Este ano" },
 ] as const satisfies readonly EventPeriod[];
-
-const description = [
-  "Parágrafo de descrição do evento.",
-  "Segundo parágrafo de descrição do evento.",
-] as const;
-
-export const upcomingEvents = [
-  {
-    id: "upcoming-1",
-    slug: "evento-1",
-    title: "Título do evento 1",
-    summary: "Resumo curto do evento.",
-    description,
-    type: eventTypes[0],
-    location: eventLocations[0],
-    startsAt: "2027-01-15T14:00:00-03:00",
-    endsAt: "2027-01-15T16:00:00-03:00",
-    accent: "sky",
-    image: placeholderImage,
-    registrationOpen: true,
-  },
-  {
-    id: "upcoming-2",
-    slug: "evento-2",
-    title: "Título do evento 2",
-    summary: "Resumo curto do evento.",
-    description,
-    type: eventTypes[1],
-    location: eventLocations[1],
-    startsAt: "2027-02-10T19:00:00-03:00",
-    endsAt: "2027-02-10T21:00:00-03:00",
-    accent: "butter",
-    image: placeholderImage,
-    registrationOpen: false,
-  },
-  {
-    id: "upcoming-3",
-    slug: "evento-3",
-    title: "Título do evento 3",
-    summary: "Resumo curto do evento.",
-    description,
-    type: eventTypes[2],
-    location: eventLocations[0],
-    startsAt: "2027-03-05T10:00:00-03:00",
-    endsAt: "2027-03-05T12:00:00-03:00",
-    accent: "teal",
-    image: placeholderImage,
-    registrationOpen: true,
-  },
-  {
-    id: "upcoming-4",
-    slug: "evento-4",
-    title: "Título do evento 4",
-    summary: "Resumo curto do evento.",
-    description,
-    type: eventTypes[0],
-    location: eventLocations[1],
-    startsAt: "2027-04-20T14:00:00-03:00",
-    endsAt: "2027-04-20T16:00:00-03:00",
-    accent: "sky",
-    image: placeholderImage,
-    registrationOpen: true,
-  },
-] as const satisfies readonly UpcomingEvent[];
 
 const photos = Array.from({ length: 9 }, (_, index) => ({
   ...placeholderImage,

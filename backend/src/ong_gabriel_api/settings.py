@@ -208,6 +208,7 @@ INSTALLED_APPS = [
     'ong_gabriel_api.accounts',
     'ong_gabriel_api.testimonials',
     'ong_gabriel_api.activities',
+    'ong_gabriel_api.events',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

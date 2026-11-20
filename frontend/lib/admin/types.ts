@@ -32,6 +32,25 @@ export type AdminActivity = {
   updated_at: string;
 };
 
+export type AdminEventAccent = "sky" | "butter" | "teal";
+
+export type AdminEvent = {
+  id: string;
+  title: string;
+  summary: string;
+  description: string;
+  event_type: string;
+  location: string;
+  starts_at: string;
+  ends_at: string;
+  accent: AdminEventAccent;
+  image: string | null;
+  image_alt: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AdminApiError = {
   message: string;
   fields: Record<string, string[]>;
