@@ -10,8 +10,19 @@ export const agendaPageContent: AgendaPageContent = {
   events: {
     heading: "Próximos Eventos",
     moreLabel: "Mais eventos",
-    emptyMessage: "Nenhum evento encontrado para os filtros selecionados.",
-    noEventsMessage: "Nenhum evento na agenda.",
+    empty: {
+      none: {
+        title: "Nenhum evento na agenda.",
+        summary:
+          "Novos eventos aparecem aqui assim que são confirmados. Enquanto isso, veja como foram os nossos eventos anteriores.",
+        action: { label: "Ver galeria", href: "/galeria" },
+      },
+      filtered: {
+        title: "Nenhum evento encontrado para os filtros selecionados.",
+        summary: "Tente outra combinação de filtros ou veja todos os eventos da agenda.",
+        actionLabel: "Ver todos os eventos",
+      },
+    },
     initialCount: 3,
     detailsLabel: "Detalhes",
     calendarLabel: "Adicionar ao calendário",

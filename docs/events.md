@@ -58,7 +58,7 @@ Event types and locations are free text, so the agenda builds its filter options
 
 ## Agenda page
 
-The Next.js server reads `GET /api/v1/events/` (cache tag `events`, revalidated after each admin change). With an empty list, or a failed request, the agenda hides the filters and shows "Nenhum evento na agenda." The blog hides its events section.
+The Next.js server reads `GET /api/v1/events/` (cache tag `events`, revalidated after each admin change). With an empty list, or a failed request, the agenda keeps the filters in place but disabled, and shows "Nenhum evento na agenda." with a link to the gallery. When the filters hide every event, it offers to clear them instead. The blog hides its events section.
 
 The "Inscrição" button stays hidden: registrations are not stored yet, so the page does not offer a form that would discard what people type. It returns with the registration API.
 
