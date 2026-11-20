@@ -17,6 +17,7 @@ Open this repository as the Obsidian vault. Notes use frontmatter, wikilinks, an
 - [[testimonials|Testimonials]]
 - [[activities|Activities]]
 - [[events|Agenda]]
+- [[gallery|Gallery]]
 - [[legacy-database|Legacy database]]
 - [[comments|Comments]]
 - [[deploy|Deploy]]
