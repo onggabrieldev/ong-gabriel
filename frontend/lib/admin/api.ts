@@ -121,7 +121,7 @@ function redirectToLogin(): void {
   window.location.assign(`/admin/entrar?next=${encodeURIComponent(safeNext)}`);
 }
 
-async function adminFetch(path: string, init: RequestInit = {}): Promise<Response> {
+export async function adminFetch(path: string, init: RequestInit = {}): Promise<Response> {
   await ensureCsrf();
   const headers = new Headers(init.headers);
   const method = (init.method ?? "GET").toUpperCase();

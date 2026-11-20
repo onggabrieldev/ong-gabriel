@@ -20,6 +20,18 @@ export type AdminTestimonial = {
   updated_at: string;
 };
 
+export type AdminActivity = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  image_alt: string;
+  is_published: boolean;
+  position: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AdminApiError = {
   message: string;
   fields: Record<string, string[]>;
