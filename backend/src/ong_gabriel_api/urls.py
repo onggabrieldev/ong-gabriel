@@ -19,6 +19,7 @@ def build_urlpatterns() -> list[URLPattern | URLResolver]:
         path('accounts/google/login/callback/', google_callback, name='google_callback'),
         path('me/', MeView.as_view(), name='me'),
         path('', include('ong_gabriel_api.testimonials.urls')),
+        path('', include('ong_gabriel_api.activities.urls')),
     ]
     if settings.ENVIRONMENT != 'prod':
         api_v1.extend(

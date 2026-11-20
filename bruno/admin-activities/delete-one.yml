@@ -1,0 +1,41 @@
+info:
+  name: Delete activity
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/admin/activities/:id"
+  auth: inherit
+  params:
+    - name: id
+      type: path
+      value: "{{activityId}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.getVar("csrfToken");
+        if (!token) {
+          throw new Error("Run auth/Session first. It sets the csrftoken cookie.");
+        }
+        req.setHeader("X-CSRFToken", token);
+    - type: after-response
+      code: |-
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+    - type: tests
+      code: |-
+        test("status is 204", function () {
+          expect(res.status).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
