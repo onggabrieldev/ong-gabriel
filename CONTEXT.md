@@ -30,6 +30,7 @@ The API is for records that change and are shared across the site:
 - comments on posts, and later maybe on events and the agenda — see [[docs/comments|Comments]]
 - events, addresses, and event types
 - testimonials, from the API — see [[docs/testimonials|Testimonials]]
+- home activities ("O que fazemos"), from the API — see [[docs/activities|Activities]]
 - media attached to those records
 - editor authentication
 - donations, once that flow exists

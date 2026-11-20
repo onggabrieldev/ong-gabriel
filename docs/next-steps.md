@@ -22,7 +22,8 @@ Where the Django migration stands and what comes next. The full branch plan and 
 
 - Branch 1, `feat-django-api`: Django and DRF, custom user, Postgres, `/health`. Merged in PR #14.
 - Branch 2, `feat-accounts-api`: allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles, `/api/v1/me/`. See [[accounts|Accounts]].
-- Branch `feat-admin-testimonials` (in review): testimonials API and Next.js admin, `SIGNUP_ENABLED`, API deploy behind Caddy, media volume, daily Postgres backups. See [[testimonials|Testimonials]] and [[deploy|Deploy]].
+- Branch `feat-admin-testimonials`: testimonials API and Next.js admin, `SIGNUP_ENABLED`, API deploy behind Caddy, media volume, daily Postgres backups. See [[testimonials|Testimonials]] and [[deploy|Deploy]]. Merged in PR #16.
+- Branch `feat-admin-activities`: home activities API and admin editor, with images, titles, and descriptions. See [[activities|Activities]].
 
 ## Next: branch 3, `feat-auth-screens`
 
