@@ -73,3 +73,19 @@ def test_moderator_permission() -> None:
     assert moderator_ok == 200
     assert editor_denied == 403
     assert super_ok == 200
+
+
+def test_editor_permission_denies_moderator_and_inactive_users() -> None:
+    moderator = create_verified_user('moderator1', 'mod@example.com')
+    moderator.groups.add(Group.objects.get(name=MODERATOR_GROUP))
+    editor = create_verified_user('editor1', 'ed@example.com')
+    editor.groups.add(Group.objects.get(name=EDITOR_GROUP))
+    editor.is_active = False
+    editor.save()
+    superuser = create_verified_user('root', 'root@example.com')
+    superuser.is_superuser = True
+    superuser.is_active = False
+    superuser.save()
+    assert _get(_EditorProbe, moderator) == 403
+    assert _get(_EditorProbe, editor) == 403
+    assert _get(_EditorProbe, superuser) == 403
