@@ -11,6 +11,7 @@ export const agendaPageContent: AgendaPageContent = {
     heading: "Próximos Eventos",
     moreLabel: "Mais eventos",
     emptyMessage: "Nenhum evento encontrado para os filtros selecionados.",
+    noEventsMessage: "Nenhum evento na agenda.",
     initialCount: 3,
     detailsLabel: "Detalhes",
     calendarLabel: "Adicionar ao calendário",

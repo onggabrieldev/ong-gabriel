@@ -61,13 +61,16 @@ export function EventDetailsDialog({
           <h2 id={titleId} className="text-center text-title font-bold text-ink-soft">
             {event.title}
           </h2>
-          <Image
-            src={event.image.src}
-            alt={event.image.alt}
-            width={169}
-            height={169}
-            className="size-42.25 rounded-sm object-cover"
-          />
+          {event.image ? (
+            <Image
+              src={event.image.src}
+              alt={event.image.alt}
+              width={169}
+              height={169}
+              unoptimized
+              className="size-42.25 rounded-sm object-cover"
+            />
+          ) : null}
           <div className="flex flex-col gap-3 text-xs text-text">
             <p>
               {registrationCopy.datePrefix} {formatEventDate(event.startsAt)}

@@ -7,7 +7,11 @@ import { PastEventsSection } from "@/components/agenda/past-events-section";
 import { SupportSection } from "@/components/home/support-section";
 import { getAgendaPage } from "@/lib/agenda/get-agenda-page";
 import type { AgendaAppliedFilters } from "@/lib/agenda/types";
-import { getEventFilterOptions, getPastEvents, getUpcomingEvents } from "@/lib/events/get-events";
+import {
+  getPastEvents,
+  getUpcomingEventFilterOptions,
+  getUpcomingEvents,
+} from "@/lib/events/get-events";
 
 export const metadata: Metadata = {
   title: "Agenda",
@@ -27,13 +31,13 @@ type AgendaPageProps = {
 };
 
 export default async function AgendaPage({ searchParams }: AgendaPageProps) {
-  const [agenda, upcoming, past, filters, params] = await Promise.all([
+  const [agenda, upcoming, past, params] = await Promise.all([
     getAgendaPage(),
     getUpcomingEvents(),
     getPastEvents(),
-    getEventFilterOptions(),
     searchParams,
   ]);
+  const filters = getUpcomingEventFilterOptions(upcoming);
 
   const initialFilters: AgendaAppliedFilters = {
     tipo: readParam(firstSearchParam(params.tipo), filters.types),

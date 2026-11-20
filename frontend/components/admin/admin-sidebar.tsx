@@ -9,6 +9,7 @@ import { siteBrand } from "@/lib/site/navigation";
 const adminNav = [
   { href: "/admin/depoimentos", label: "Depoimentos" },
   { href: "/admin/atividades", label: "Atividades" },
+  { href: "/admin/agenda", label: "Agenda" },
 ] as const;
 
 type AdminSidebarProps = {

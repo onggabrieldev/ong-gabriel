@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { getAdminAccess, sessionCookieName } from "@/lib/admin/session";
 
-const homeSectionTags = ["testimonials", "activities"] as const;
+const homeSectionTags = ["testimonials", "activities", "events"] as const;
 
 export type HomeSectionTag = (typeof homeSectionTags)[number];
 

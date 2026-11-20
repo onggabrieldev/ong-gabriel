@@ -23,7 +23,7 @@ export type UpcomingEvent = {
   startsAt: string;
   endsAt: string;
   accent: EventAccent;
-  image: MediaAsset;
+  image: MediaAsset | null;
   registrationOpen: boolean;
 };
 
