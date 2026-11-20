@@ -67,9 +67,25 @@ export function canAccessAdmin(user: MeUser): boolean {
   return user.is_superuser || user.roles.includes("editor");
 }
 
+export const adminLoginPath = "/admin/entrar";
+export const adminHomePath = "/admin/depoimentos";
+
 export function isSafeAdminPath(value: string): boolean {
   if (value.includes("://") || value.includes("\\") || value.startsWith("//")) {
     return false;
   }
   return value === "/admin" || value.startsWith("/admin/");
+}
+
+// Where to go after signing in. The login page itself is never a destination,
+// or a signed-in editor would bounce between it and the redirect forever.
+export function adminDestination(next: string | null): string {
+  if (!next || !isSafeAdminPath(next)) {
+    return adminHomePath;
+  }
+  const path = next.split(/[?#]/, 1)[0];
+  if (path === adminLoginPath || path.startsWith(`${adminLoginPath}/`)) {
+    return adminHomePath;
+  }
+  return next;
 }
