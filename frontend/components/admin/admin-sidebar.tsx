@@ -2,8 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CloseIcon, MenuIcon } from "@/components/icons/icon";
 import { siteBrand } from "@/lib/site/navigation";
+
+const adminNav = [
+  { href: "/admin/depoimentos", label: "Depoimentos" },
+  { href: "/admin/atividades", label: "Atividades" },
+] as const;
 
 type AdminSidebarProps = {
   username: string;
@@ -20,6 +26,8 @@ export function AdminSidebar({
   onToggleMenu,
   onLogout,
 }: AdminSidebarProps) {
+  const pathname = usePathname();
+
   return (
     <aside className="flex flex-col bg-cream lg:sticky lg:top-0 lg:h-dvh lg:w-90 lg:shrink-0 lg:overflow-y-auto lg:shadow-header">
       <div className="flex items-center gap-3 px-4 py-4 lg:px-4 lg:pt-4">
@@ -46,14 +54,27 @@ export function AdminSidebar({
         id={menuId}
         className={`flex-1 flex-col px-4 pb-6 lg:flex lg:pt-10 ${menuOpen ? "flex" : "hidden lg:flex"}`}
       >
-        <nav aria-label="Administração" className="flex flex-col gap-8">
-          <Link
-            href="/admin/depoimentos"
-            aria-current="page"
-            className="rounded-lg bg-butter px-2 py-2 text-body text-text transition-colors hover:bg-saffron-soft"
-          >
-            Depoimentos
-          </Link>
+        <nav aria-label="Administração" className="flex flex-col gap-2">
+          {adminNav.map((item) => {
+            const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={current ? "page" : undefined}
+                onClick={() => {
+                  if (menuOpen) {
+                    onToggleMenu();
+                  }
+                }}
+                className={`rounded-lg px-2 py-2 text-body text-text transition-colors hover:bg-saffron-soft ${
+                  current ? "bg-butter" : ""
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="mt-auto flex flex-col gap-3 pt-10">
           <p className="px-2 text-body text-muted">

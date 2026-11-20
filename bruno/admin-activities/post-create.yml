@@ -1,0 +1,58 @@
+info:
+  name: Create activity
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/admin/activities/"
+  auth: inherit
+  body:
+    type: multipart-form
+    data:
+      - name: title
+        type: text
+        value: Rodas de conversa e palestras
+      - name: description
+        type: text
+        value: Conversas sobre ansiedade, estresse e depressão com pessoas em situações parecidas.
+      - name: image_alt
+        type: text
+        value: Roda de conversa com o grupo sentado em círculo.
+      - name: image
+        type: file
+        value: []
+      - name: is_published
+        type: text
+        value: "true"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.getVar("csrfToken");
+        if (!token) {
+          throw new Error("Run auth/Session first. It sets the csrftoken cookie.");
+        }
+        req.setHeader("X-CSRFToken", token);
+    - type: after-response
+      code: |-
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+        if (res.status === 201 && res.body && res.body.id) {
+          bru.setVar("activityId", res.body.id);
+        }
+    - type: tests
+      code: |-
+        test("status is 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+settings:
+  encodeUrl: true

@@ -6,12 +6,12 @@ import { useCloseOnBackdrop } from "@/components/ui/close-on-backdrop";
 type DeleteDialogProps = {
   dialogRef: RefObject<HTMLDialogElement | null>;
   dialogId: string;
-  name: string;
+  title: string;
   busy: boolean;
   onConfirm: () => void;
 };
 
-export function DeleteDialog({ dialogRef, dialogId, name, busy, onConfirm }: DeleteDialogProps) {
+export function DeleteDialog({ dialogRef, dialogId, title, busy, onConfirm }: DeleteDialogProps) {
   const titleId = useId();
   useCloseOnBackdrop(dialogRef);
 
@@ -24,7 +24,7 @@ export function DeleteDialog({ dialogRef, dialogId, name, busy, onConfirm }: Del
     >
       <div className="p-8">
         <h2 id={titleId} className="text-title font-bold text-ink-soft">
-          Apagar o depoimento de {name}?
+          {title}
         </h2>
         <p className="mt-4 text-body">Esta ação não pode ser desfeita.</p>
         <div className="mt-8 flex flex-wrap justify-end gap-3">

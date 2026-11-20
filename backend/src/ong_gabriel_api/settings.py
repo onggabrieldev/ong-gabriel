@@ -207,6 +207,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'ong_gabriel_api.accounts',
     'ong_gabriel_api.testimonials',
+    'ong_gabriel_api.activities',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

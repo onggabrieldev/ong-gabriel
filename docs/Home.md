@@ -15,6 +15,7 @@ Open this repository as the Obsidian vault. Notes use frontmatter, wikilinks, an
 - [[django-migration-decisions|Django migration decisions]]
 - [[accounts|Accounts]]
 - [[testimonials|Testimonials]]
+- [[activities|Activities]]
 - [[legacy-database|Legacy database]]
 - [[comments|Comments]]
 - [[deploy|Deploy]]

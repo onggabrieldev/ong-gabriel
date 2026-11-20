@@ -28,7 +28,20 @@ function canRevalidate(payload: unknown): boolean {
   return payload.roles.some((role) => role === "editor");
 }
 
-export async function revalidateTestimonials(): Promise<void> {
+const homeSectionTags = ["testimonials", "activities"] as const;
+
+export type HomeSectionTag = (typeof homeSectionTags)[number];
+
+function isHomeSectionTag(value: unknown): value is HomeSectionTag {
+  return homeSectionTags.some((tag) => tag === value);
+}
+
+export async function revalidateHomeSection(tag: HomeSectionTag): Promise<void> {
+  // A server action receives whatever the client sends, so check the tag here.
+  if (!isHomeSectionTag(tag)) {
+    return;
+  }
+
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
   if (cookieHeader.length === 0) {
@@ -51,7 +64,7 @@ export async function revalidateTestimonials(): Promise<void> {
     if (!canRevalidate(payload)) {
       return;
     }
-    updateTag("testimonials");
+    updateTag(tag);
   } catch {
     return;
   }

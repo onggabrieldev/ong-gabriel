@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { revalidateTestimonials } from "@/app/admin/actions";
+import { revalidateHomeSection } from "@/app/admin/actions";
 import { DeleteDialog } from "@/components/admin/delete-dialog";
 import { TestimonialForm } from "@/components/admin/testimonial-form";
 import { TestimonialListCard } from "@/components/admin/testimonial-list-card";
@@ -63,7 +63,7 @@ export function TestimonialsManager() {
     setItems(next);
     setStatus(message);
     showToast(message, "success");
-    await revalidateTestimonials();
+    await revalidateHomeSection("testimonials");
   }
 
   function fail(error: unknown, fallback: string) {
@@ -226,7 +226,7 @@ export function TestimonialsManager() {
       <DeleteDialog
         dialogRef={deleteDialogRef}
         dialogId={deleteDialogId}
-        name={pendingDelete?.name ?? ""}
+        title={`Apagar o depoimento de ${pendingDelete?.name ?? ""}?`}
         busy={deleting}
         onConfirm={() => {
           void handleConfirmDelete();

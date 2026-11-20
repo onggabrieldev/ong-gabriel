@@ -30,44 +30,7 @@ export const homePageContent: HomePageContent = {
   activities: {
     heading: "O que fazemos",
     action: { label: "Confira nossa agenda", href: "/agenda" },
-    items: [
-      {
-        id: "conversations",
-        title: "Rodas de conversa e palestras",
-        description:
-          "Conversas sobre temas como ansiedade, estresse, depressão, pressões da escola ou trabalho com pessoas lidando com situações parecidas.",
-        image: {
-          src: "/images/home/conversation.webp",
-          alt: "Roda de conversa da ONG Gabriel: uma pessoa em pé fala para o grupo sentado em círculo.",
-          width: 1080,
-          height: 1080,
-        },
-      },
-      {
-        id: "events",
-        title: "Atividades e eventos",
-        description:
-          "Promovemos palestras em escolas e eventos abertos ao público com o objetivo de conscientizar as pessoas sobre a importância da saúde mental.",
-        image: {
-          src: "/images/home/gathering.webp",
-          alt: "Grupo de crianças, jovens e adultos da ONG Gabriel posando diante de um painel com a marca e códigos QR.",
-          width: 1080,
-          height: 1080,
-        },
-      },
-      {
-        id: "therapy",
-        title: "Terapia e atendimento psicológico",
-        description:
-          "Não lide com tudo sozinho. Oferecemos consulta psicológicas sem custo algum. Vamos conversar.",
-        image: {
-          src: "/images/home/therapy.webp",
-          alt: "Duas pessoas sentadas, de mãos dadas, durante um momento de acolhimento.",
-          width: 374,
-          height: 338,
-        },
-      },
-    ],
+    items: [],
   },
   support: {
     title: "Suporte emocional para sua vida!",

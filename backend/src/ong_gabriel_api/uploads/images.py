@@ -7,11 +7,10 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 MAX_BYTES = 5 * 1024 * 1024
 MAX_DIMENSION = 6000
-OUTPUT_SIZE = 256
 WEBP_QUALITY = 82
 ALLOWED_FORMATS = frozenset({'JPEG', 'PNG', 'WEBP'})
 
-# Pillow's decompression-bomb cap, set once. process_portrait also rejects
+# Pillow's decompression-bomb cap, set once. process_square_image also rejects
 # dimensions above MAX_DIMENSION after reading the image header.
 Image.MAX_IMAGE_PIXELS = MAX_DIMENSION * MAX_DIMENSION
 
@@ -20,7 +19,7 @@ ERROR_INVALID = 'Envie uma imagem JPEG, PNG ou WebP.'
 ERROR_DIMENSIONS = 'A imagem deve ter no máximo 6000x6000 pixels.'
 
 
-def process_portrait(uploaded: File) -> ContentFile:
+def process_square_image(uploaded: File, output_size: int) -> ContentFile:
     payload = _read_limited(uploaded)
     try:
         with Image.open(BytesIO(payload)) as preview:
@@ -39,7 +38,7 @@ def process_portrait(uploaded: File) -> ContentFile:
             image.load()
             transposed = ImageOps.exif_transpose(image) or image
             squared = _center_crop_square(transposed)
-            resized = squared.resize((OUTPUT_SIZE, OUTPUT_SIZE), Image.Resampling.LANCZOS)
+            resized = squared.resize((output_size, output_size), Image.Resampling.LANCZOS)
             converted = _webp_mode(resized)
             buffer = BytesIO()
             converted.save(

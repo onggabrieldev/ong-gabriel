@@ -4,7 +4,8 @@ from typing import ClassVar
 from django.core.validators import MaxLengthValidator
 from django.db import models, transaction
 
-from ong_gabriel_api.testimonials.files import schedule_file_delete
+from ong_gabriel_api.ordering import next_position
+from ong_gabriel_api.uploads.files import schedule_file_delete
 
 
 class Testimonial(models.Model):
@@ -27,13 +28,7 @@ class Testimonial(models.Model):
     def save(self, *args: object, **kwargs: object) -> None:
         if self._state.adding:
             with transaction.atomic():
-                max_position = (
-                    Testimonial.objects.select_for_update()
-                    .order_by('-position')
-                    .values_list('position', flat=True)
-                    .first()
-                )
-                self.position = 0 if max_position is None else max_position + 1
+                self.position = next_position(Testimonial.objects.all())
                 super().save(*args, **kwargs)
             return
         update_fields = kwargs.get('update_fields')
