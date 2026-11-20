@@ -20,11 +20,17 @@ export type AgendaAppliedFilters = {
   periodo: string;
 };
 
+export type AgendaEmptyCopy = {
+  // The agenda has no upcoming events at all.
+  none: { title: string; summary: string; action: { label: string; href: string } };
+  // There are events, but none matches the applied filters.
+  filtered: { title: string; summary: string; actionLabel: string };
+};
+
 export type AgendaEventsCopy = {
   heading: string;
   moreLabel: string;
-  emptyMessage: string;
-  noEventsMessage: string;
+  empty: AgendaEmptyCopy;
   initialCount: number;
   detailsLabel: string;
   calendarLabel: string;
