@@ -8,15 +8,19 @@ type ActivitiesSectionProps = {
 };
 
 export function ActivitiesSection({ activities }: ActivitiesSectionProps) {
+  if (activities.items.length === 0) {
+    return null;
+  }
+
   return (
     <section aria-labelledby="activities-title" className="bg-canvas">
       <div className="mx-auto flex max-w-360 flex-col gap-8 px-4 py-16 lg:px-20 lg:py-28">
         <h2 id="activities-title" className="sr-only">
           {activities.heading}
         </h2>
-        <ul className="grid gap-8 lg:grid-cols-3 lg:gap-10">
+        <ul className="flex flex-wrap justify-center gap-8 lg:gap-10">
           {activities.items.map((activity) => (
-            <li key={activity.id}>
+            <li key={activity.id} className="w-full lg:w-[calc((100%_-_--spacing(20))/3)]">
               <ActivityCard activity={activity} />
             </li>
           ))}
