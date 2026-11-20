@@ -1,5 +1,5 @@
-from ong_gabriel_api.testimonials.files import schedule_file_delete
 from ong_gabriel_api.testimonials.models import Testimonial
+from ong_gabriel_api.uploads.files import schedule_file_delete
 
 
 def delete_portrait_file(sender: type[Testimonial], instance: Testimonial, **kwargs: object) -> None:

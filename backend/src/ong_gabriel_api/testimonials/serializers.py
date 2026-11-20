@@ -1,32 +1,15 @@
 from collections.abc import Mapping
 
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.files.base import ContentFile
-from django.db.models.fields.files import ImageFieldFile
 from rest_framework import serializers
 
-from ong_gabriel_api.testimonials.images import process_portrait
 from ong_gabriel_api.testimonials.models import Testimonial
+from ong_gabriel_api.uploads.fields import SquareImageField
 
-
-class PortraitField(serializers.FileField):
-    def to_internal_value(self, data: object) -> ContentFile | None:
-        if data in (None, '', 'null'):
-            return None
-        uploaded = super().to_internal_value(data)
-        try:
-            return process_portrait(uploaded)
-        except DjangoValidationError as exc:
-            raise serializers.ValidationError(exc.messages) from exc
-
-    def to_representation(self, value: ImageFieldFile | None) -> str | None:
-        if not value:
-            return None
-        return value.url
+PORTRAIT_SIZE = 256
 
 
 class PublicTestimonialSerializer(serializers.ModelSerializer):
-    portrait = PortraitField(read_only=True)
+    portrait = SquareImageField(output_size=PORTRAIT_SIZE, read_only=True)
 
     class Meta:
         model = Testimonial
@@ -34,7 +17,7 @@ class PublicTestimonialSerializer(serializers.ModelSerializer):
 
 
 class AdminTestimonialSerializer(serializers.ModelSerializer):
-    portrait = PortraitField(required=False, allow_null=True)
+    portrait = SquareImageField(output_size=PORTRAIT_SIZE, required=False, allow_null=True)
     quote = serializers.CharField(max_length=500, min_length=1, trim_whitespace=True)
     name = serializers.CharField(max_length=80, min_length=1, trim_whitespace=True)
     role = serializers.CharField(max_length=80, allow_blank=True, required=False, trim_whitespace=True)
