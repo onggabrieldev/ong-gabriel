@@ -5,15 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
 import { EyeIcon, EyeOffIcon } from "@/components/icons/icon";
 import { getMe, login, logout } from "@/lib/admin/api";
-import { canAccessAdmin, isSafeAdminPath } from "@/lib/admin/types";
+import { adminDestination, canAccessAdmin } from "@/lib/admin/types";
 import { siteBrand } from "@/lib/site/navigation";
-
-function destinationFromNext(raw: string | null): string {
-  if (raw && isSafeAdminPath(raw)) {
-    return raw;
-  }
-  return "/admin/depoimentos";
-}
 
 export function LoginForm() {
   const router = useRouter();
@@ -60,7 +53,7 @@ export function LoginForm() {
         return;
       }
 
-      router.replace(destinationFromNext(searchParams.get("next")));
+      router.replace(adminDestination(searchParams.get("next")));
     } catch {
       setError("Não foi possível entrar. Tente de novo.");
     } finally {

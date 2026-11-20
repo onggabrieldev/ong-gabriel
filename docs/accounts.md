@@ -72,7 +72,9 @@ Sign-in accepts the username or the email. A failed sign-in returns one generic 
 
 With `SIGNUP_ENABLED=false` (the default), nobody can create an account through the API, including Google. Existing accounts still sign in. Create the first team accounts with `createsuperuser` or in Django admin. `PASSWORD_SIGNUP_ENABLED` only matters when signup is open.
 
-The Next.js admin accepts a superuser or a member of the `editor` group.
+The Next.js admin accepts an active superuser or an active member of the `editor` group. Moderators have no admin access.
+
+`frontend/proxy.ts` guards every `/admin` route on the server. It sends the `sessionid` cookie to `GET /api/v1/me/` and lets the request through only for an editor. A cookie that exists but is expired, revoked, forged, or belongs to a non-editor counts as no session. Anyone else on a panel route goes to `/admin/entrar?next=…`. If the API does not answer, the panel also redirects: it fails closed. A signed-in editor who opens `/admin/entrar` goes to `next` or to `/admin/depoimentos`. `next` must be an `/admin` path and never the login page. This guard only covers the screens. Django enforces `IsEditor` on every admin API route, and that is the real boundary.
 
 Username rules match the `User` model: min 3, max 32, `[A-Za-z0-9._-]`, no `@`, unique ignoring case. Emails are unique ignoring case.
 

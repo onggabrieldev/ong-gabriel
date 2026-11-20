@@ -1,12 +1,8 @@
-const defaultApiOrigin = "http://127.0.0.1:8000";
+import { apiOrigin } from "@/lib/api/origin";
+
 const fetchTimeoutMs = 5000;
 
 const loggedFailures = new Set<string>();
-
-function apiOrigin(): string {
-  const raw = process.env.API_INTERNAL_URL ?? defaultApiOrigin;
-  return raw.endsWith("/") ? raw.slice(0, -1) : raw;
-}
 
 function logFailure(label: string, reason: unknown): void {
   if (loggedFailures.has(label)) {

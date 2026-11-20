@@ -13,6 +13,7 @@ from PIL import Image
 from PIL.ExifTags import GPS, IFD
 
 from allauth_http import PASSWORD, create_verified_user, json_post
+from ong_gabriel_api.accounts.models import User
 from ong_gabriel_api.accounts.roles import EDITOR_GROUP
 from ong_gabriel_api.testimonials.models import Testimonial as TestimonialRecord
 
@@ -359,3 +360,13 @@ def test_internal_list_with_forwarded_proto_and_api_host(client: Client) -> None
     response = client.get(PUBLIC_URL, HTTP_HOST='api', HTTP_X_FORWARDED_PROTO='https')
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_deactivated_editor_loses_admin_access_mid_session(client: Client) -> None:
+    _login_editor(client)
+    assert client.get(ADMIN_URL).status_code == 200
+    user = User.objects.get(username='editor1')
+    user.is_active = False
+    user.save()
+    assert client.get(ADMIN_URL).status_code == 403
+    assert client.get('/api/v1/me/').status_code == 403
