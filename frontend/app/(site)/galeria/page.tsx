@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/gallery/breadcrumb";
 import { DonationCta } from "@/components/gallery/donation-cta";
 import { GalleryEvents, GalleryEventsFallback } from "@/components/gallery/gallery-events";
 import { HeroSection } from "@/components/gallery/hero-section";
-import { getEventFilterOptions, getPastEvents } from "@/lib/events/get-events";
+import { getPastEventFilterOptions, getPastEvents } from "@/lib/events/get-events";
 import { getGalleryPage } from "@/lib/gallery/get-gallery-page";
 
 export const metadata: Metadata = {
@@ -13,11 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-  const [page, events, options] = await Promise.all([
-    getGalleryPage(),
-    getPastEvents(),
-    getEventFilterOptions(),
-  ]);
+  const [page, events] = await Promise.all([getGalleryPage(), getPastEvents()]);
+  const options = getPastEventFilterOptions(events);
 
   return (
     <>

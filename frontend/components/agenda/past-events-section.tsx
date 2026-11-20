@@ -13,6 +13,10 @@ type PastEventsSectionProps = {
 
 export function PastEventsSection({ gallery, events }: PastEventsSectionProps) {
   const preview = events.slice(0, 3);
+  // Without albums the gallery has nothing to show, so the agenda skips it.
+  if (preview.length === 0) {
+    return null;
+  }
 
   return (
     <section aria-labelledby="past-events-title" className="bg-cream">
@@ -37,6 +41,7 @@ export function PastEventsSection({ gallery, events }: PastEventsSectionProps) {
                     width={event.cover.width}
                     height={event.cover.height}
                     sizes="(min-width: 64rem) 24rem, 100vw"
+                    unoptimized
                     className="h-48 w-full object-cover"
                   />
                   <div className="flex flex-1 flex-col gap-4 px-6 py-6.5">

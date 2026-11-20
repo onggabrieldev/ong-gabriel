@@ -126,6 +126,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
                       width={photo.width}
                       height={photo.height}
                       sizes="(min-width: 64rem) 24rem, 100vw"
+                      unoptimized
                       className="aspect-square w-full object-cover"
                     />
                   </button>
@@ -164,6 +165,7 @@ export function PhotoGallery({ photos, copy }: PhotoGalleryProps) {
                   width={current.width}
                   height={current.height}
                   sizes="(min-width: 64rem) 60rem, 100vw"
+                  unoptimized
                   className="h-auto max-h-[80vh] w-full object-contain"
                 />
                 <button

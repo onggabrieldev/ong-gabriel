@@ -11,8 +11,16 @@ type GalleryEventPageProps = PageProps<"/galeria/[slug]">;
 // Blocking: notFound() must run before the PPR shell streams. HTTP status stays a soft 404.
 export const instant = false;
 
+// Cache Components needs at least one param. Without albums, or when the API
+// is unreachable during the Docker build, "_" stands in: Django never makes a
+// slug that is only an underscore, so it renders the not-found screen.
+const placeholderSlug = "_";
+
 export async function generateStaticParams() {
   const events = await getPastEvents();
+  if (events.length === 0) {
+    return [{ slug: placeholderSlug }];
+  }
   return events.map((event) => ({ slug: event.slug }));
 }
 

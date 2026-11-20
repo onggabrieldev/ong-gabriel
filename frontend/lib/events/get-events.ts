@@ -1,14 +1,16 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { fetchPublicList, isRecord } from "@/lib/api/public-list";
-import { eventLocations, eventPeriods, eventTypes, pastEvents } from "@/lib/events/content";
+import { fetchPublicItem, fetchPublicList, isRecord } from "@/lib/api/public-list";
+import { eventPeriods } from "@/lib/events/content";
 import type {
   EventAccent,
   EventLocation,
   EventPeriod,
   EventType,
   PastEvent,
+  PastEventDetail,
   UpcomingEvent,
 } from "@/lib/events/types";
+import type { MediaAsset } from "@/lib/home/types";
 
 // The API stores every event image as a square WebP of this size.
 const imageSize = 800;
@@ -132,21 +134,115 @@ export function getUpcomingEventFilterOptions(events: readonly UpcomingEvent[]):
   };
 }
 
-// The gallery getters still read placeholder records. Swap each body for a
-// fetch and keep the signature.
+// The API stores every album cover as a square WebP of this size.
+const coverSize = 800;
+
+// Django slugs. Anything else never reaches the API, so a crafted slug cannot
+// point the request at another route.
+const slugPattern = /^[A-Za-z0-9_-]+$/;
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+function parsePastEvent(value: unknown): PastEvent | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const { id, slug, title, summary, event_type, location, held_on, cover, cover_alt, photo_count } =
+    value;
+  if (
+    typeof id !== "string" ||
+    typeof slug !== "string" ||
+    !slugPattern.test(slug) ||
+    typeof title !== "string" ||
+    typeof summary !== "string" ||
+    typeof event_type !== "string" ||
+    typeof location !== "string" ||
+    typeof held_on !== "string" ||
+    typeof cover !== "string" ||
+    typeof cover_alt !== "string" ||
+    typeof photo_count !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    id,
+    slug,
+    title,
+    summary,
+    type: toOption(event_type),
+    location: toOption(location),
+    heldOn: held_on,
+    cover: { src: cover, alt: cover_alt, width: coverSize, height: coverSize },
+    photoCount: photo_count,
+  };
+}
+
+function parsePhoto(value: unknown): MediaAsset | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const { image, image_alt, width, height } = value;
+  if (
+    typeof image !== "string" ||
+    typeof image_alt !== "string" ||
+    !isPositiveInteger(width) ||
+    !isPositiveInteger(height)
+  ) {
+    return null;
+  }
+  return { src: image, alt: image_alt, width, height };
+}
+
+function parsePastEventDetail(value: unknown): PastEventDetail | null {
+  const event = parsePastEvent(value);
+  if (event === null || !isRecord(value) || !Array.isArray(value.photos)) {
+    return null;
+  }
+  const photos: MediaAsset[] = [];
+  for (const entry of value.photos) {
+    const photo = parsePhoto(entry);
+    if (photo === null) {
+      return null;
+    }
+    photos.push(photo);
+  }
+  return { ...event, photos };
+}
 
 export async function getPastEvents(): Promise<readonly PastEvent[]> {
-  return pastEvents;
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("gallery");
+
+  return fetchPublicList("/api/v1/gallery/", "gallery albums", parsePastEvent);
 }
 
-export async function getPastEvent(slug: string): Promise<PastEvent | undefined> {
-  return pastEvents.find((event) => event.slug === slug);
+export async function getPastEvent(slug: string): Promise<PastEventDetail | undefined> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("gallery");
+
+  if (!slugPattern.test(slug)) {
+    return undefined;
+  }
+  const event = await fetchPublicItem(
+    `/api/v1/gallery/${slug}/`,
+    "gallery album",
+    parsePastEventDetail,
+  );
+  return event ?? undefined;
 }
 
-export async function getEventFilterOptions(): Promise<{
+export function getPastEventFilterOptions(events: readonly PastEvent[]): {
   types: readonly EventType[];
   locations: readonly EventLocation[];
-  periods: readonly EventPeriod[];
-}> {
-  return { types: eventTypes, locations: eventLocations, periods: eventPeriods };
+} {
+  return {
+    types: uniqueOptions(events.map((event) => event.type)),
+    locations: uniqueOptions(events.map((event) => event.location)),
+  };
 }

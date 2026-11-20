@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
+import { Checkbox, FilePicker } from "@/components/admin/form-controls";
+import { inputClass, textareaClass } from "@/components/admin/form-field";
 import { createActivity, updateActivity } from "@/lib/admin/activities-api";
 import { isAdminApiError } from "@/lib/admin/api";
 import type { AdminActivity, AdminApiError } from "@/lib/admin/types";
@@ -176,7 +178,7 @@ export function ActivityForm({ mode, initial, onCancel, onSaved }: ActivityFormP
               setTitle(event.target.value);
               setErrors((current) => ({ ...current, title: undefined }));
             }}
-            className="mt-1 h-10 w-full rounded-lg border border-line bg-canvas px-2 text-body text-ink-soft"
+            className={inputClass}
           />
           <p
             id={titleCountId}
@@ -211,7 +213,7 @@ export function ActivityForm({ mode, initial, onCancel, onSaved }: ActivityFormP
               setDescription(event.target.value);
               setErrors((current) => ({ ...current, description: undefined }));
             }}
-            className="mt-1 min-h-24 w-full rounded-lg border border-line bg-canvas px-2 py-2 text-body text-ink-soft"
+            className={`${textareaClass} min-h-24`}
           />
           <p
             id={descriptionCountId}
@@ -233,17 +235,15 @@ export function ActivityForm({ mode, initial, onCancel, onSaved }: ActivityFormP
           <label htmlFor={imageId} className="text-label font-semibold text-text">
             Imagem
           </label>
-          <input
-            ref={fileRef}
+          <FilePicker
+            inputRef={fileRef}
             id={imageId}
             name="image"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            required={mode === "create"}
-            aria-invalid={errors.image ? true : undefined}
-            aria-describedby={`${imageId}-hint${errors.image ? ` ${imageId}-error` : ""}`}
-            onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
-            className="mt-1 w-full rounded-lg border border-line bg-canvas px-2 py-2 text-body text-ink-soft file:me-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-sky-deep file:px-3 file:py-1 file:text-body file:font-semibold file:text-indigo"
+            invalid={Boolean(errors.image)}
+            describedBy={`${imageId}-hint${errors.image ? ` ${imageId}-error` : ""}`}
+            buttonLabel={existingImage ? "Trocar imagem" : "Escolher imagem"}
+            selectedLabel={imageFile?.name ?? null}
+            onFiles={(files) => handleFile(files[0] ?? null)}
           />
           <p id={`${imageId}-hint`} className="pt-1 text-[0.6875rem] leading-snug text-muted">
             JPEG, PNG ou WebP de até 5 MB. A imagem é recortada no centro em formato quadrado.
@@ -292,7 +292,7 @@ export function ActivityForm({ mode, initial, onCancel, onSaved }: ActivityFormP
               setImageAlt(event.target.value);
               setErrors((current) => ({ ...current, image_alt: undefined }));
             }}
-            className="mt-1 h-10 w-full rounded-lg border border-line bg-canvas px-2 text-body text-ink-soft"
+            className={inputClass}
           />
           <p id={`${altId}-hint`} className="pt-1 text-[0.6875rem] leading-snug text-muted">
             Lida por leitores de tela. Deixe vazio se a imagem for só decorativa.
@@ -307,20 +307,14 @@ export function ActivityForm({ mode, initial, onCancel, onSaved }: ActivityFormP
         </div>
 
         <div className="flex items-center lg:col-span-2">
-          <label
-            htmlFor={publishedId}
-            className="flex cursor-pointer items-center gap-2 text-body text-text"
+          <Checkbox
+            id={publishedId}
+            name="is_published"
+            checked={isPublished}
+            onChange={setIsPublished}
           >
-            <input
-              id={publishedId}
-              name="is_published"
-              type="checkbox"
-              checked={isPublished}
-              onChange={(event) => setIsPublished(event.target.checked)}
-              className="size-6 cursor-pointer rounded-sm border-placeholder"
-            />
             Publicar na página inicial
-          </label>
+          </Checkbox>
         </div>
       </div>
 

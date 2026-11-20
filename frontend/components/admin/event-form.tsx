@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
+import { DatePicker, TimePicker } from "@/components/admin/date-picker";
+import { Checkbox, FilePicker, SelectInput } from "@/components/admin/form-controls";
+import { Field, inputClass, textareaClass } from "@/components/admin/form-field";
 import { isAdminApiError } from "@/lib/admin/api";
 import { addHours, toWallClock } from "@/lib/admin/event-dates";
 import { createEvent, updateEvent } from "@/lib/admin/events-api";
@@ -41,43 +44,52 @@ const fieldNames = [
 type FieldName = (typeof fieldNames)[number];
 type FormErrors = Partial<Record<FieldName, string>>;
 
-const inputClass =
-  "mt-1 h-10 w-full rounded-lg border border-line bg-canvas px-2 text-body text-ink-soft";
-const textareaClass =
-  "mt-1 w-full rounded-lg border border-line bg-canvas px-2 py-2 text-body text-ink-soft";
-const hintClass = "pt-1 text-[0.6875rem] leading-snug text-muted";
+const wallClockPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
-type FieldProps = {
+function isWallClock(value: string): boolean {
+  return wallClockPattern.test(value);
+}
+
+type DateTimeFieldsProps = {
   id: string;
   label: string;
-  error: string | undefined;
-  hint?: ReactNode;
-  // Character counts change while typing, so screen readers hear them.
-  liveHint?: boolean;
-  className?: string;
-  children: (describedBy: string | undefined) => ReactNode;
+  // "YYYY-MM-DDTHH:mm", or a part of it while the editor picks.
+  value: string;
+  minDate?: string;
+  invalid: boolean;
+  describedBy: string | undefined;
+  onChange: (value: string) => void;
 };
 
-function Field({ id, label, error, hint, liveHint, className, children }: FieldProps) {
-  const ids = [hint ? `${id}-hint` : "", error ? `${id}-error` : ""].filter(Boolean).join(" ");
+function DateTimeFields({
+  id,
+  label,
+  value,
+  minDate,
+  invalid,
+  describedBy,
+  onChange,
+}: DateTimeFieldsProps) {
+  const [datePart = "", timePart = ""] = value.split("T");
   return (
-    <div className={className}>
-      <label htmlFor={id} className="text-label font-semibold text-text">
-        {label}
-      </label>
-      {children(ids || undefined)}
-      {hint ? (
-        <p id={`${id}-hint`} aria-live={liveHint ? "polite" : undefined} className={hintClass}>
-          {hint}
-        </p>
-      ) : null}
-      <p
-        id={`${id}-error`}
-        className="min-h-5 text-sm font-semibold text-danger"
-        aria-hidden={error ? undefined : true}
-      >
-        {error}
-      </p>
+    <div className="grid grid-cols-[minmax(0,1fr)_--spacing(28)] gap-2">
+      <DatePicker
+        id={id}
+        label={`${label}, data`}
+        value={datePart}
+        min={minDate}
+        invalid={invalid}
+        describedBy={describedBy}
+        onChange={(date) => onChange(`${date}T${timePart}`)}
+      />
+      <TimePicker
+        id={`${id}-time`}
+        label={`${label}, hora`}
+        value={timePart}
+        invalid={invalid}
+        describedBy={describedBy}
+        onChange={(time) => onChange(`${datePart}T${time}`)}
+      />
     </div>
   );
 }
@@ -180,7 +192,7 @@ export function EventForm({
     setStartsAt(value);
     clearError("starts_at");
     // Suggest an end time until the editor picks one that fits.
-    if (value && (!endsAt || endsAt <= value)) {
+    if (isWallClock(value) && (!isWallClock(endsAt) || endsAt <= value)) {
       setEndsAt(addHours(value, defaultDurationHours));
       clearError("ends_at");
     }
@@ -201,12 +213,12 @@ export function EventForm({
     checkText("event_type", eventType.trim(), maxEventType, "Informe o tipo de evento.");
     checkText("location", location.trim(), maxLocation, "Informe o local.");
     checkText("image_alt", imageAlt.trim(), maxImageAlt, null);
-    if (!startsAt) {
+    if (!isWallClock(startsAt)) {
       next.starts_at = "Informe a data e a hora de início.";
     }
-    if (!endsAt) {
+    if (!isWallClock(endsAt)) {
       next.ends_at = "Informe a data e a hora de término.";
-    } else if (startsAt && endsAt <= startsAt) {
+    } else if (isWallClock(startsAt) && endsAt <= startsAt) {
       next.ends_at = "O término deve ser depois do início.";
     }
     return next;
@@ -357,36 +369,30 @@ export function EventForm({
           hint="Horário de Brasília."
         >
           {(describedBy) => (
-            <input
+            <DateTimeFields
               id={ids.starts_at}
-              name="starts_at"
-              type="datetime-local"
-              required
+              label="Início"
               value={startsAt}
-              aria-invalid={errors.starts_at ? true : undefined}
-              aria-describedby={describedBy}
-              onChange={(event) => handleStartsAt(event.target.value)}
-              className={inputClass}
+              invalid={Boolean(errors.starts_at)}
+              describedBy={describedBy}
+              onChange={handleStartsAt}
             />
           )}
         </Field>
 
         <Field id={ids.ends_at} label="Término" error={errors.ends_at} hint="Horário de Brasília.">
           {(describedBy) => (
-            <input
+            <DateTimeFields
               id={ids.ends_at}
-              name="ends_at"
-              type="datetime-local"
-              required
-              min={startsAt || undefined}
+              label="Término"
               value={endsAt}
-              aria-invalid={errors.ends_at ? true : undefined}
-              aria-describedby={describedBy}
-              onChange={(event) => {
-                setEndsAt(event.target.value);
+              minDate={startsAt.slice(0, 10) || undefined}
+              invalid={Boolean(errors.ends_at)}
+              describedBy={describedBy}
+              onChange={(value) => {
+                setEndsAt(value);
                 clearError("ends_at");
               }}
-              className={inputClass}
             />
           )}
         </Field>
@@ -451,12 +457,12 @@ export function EventForm({
           hint="Cor do bloco com o dia e a hora no card."
         >
           {(describedBy) => (
-            <select
+            <SelectInput
               id={ids.accent}
               name="accent"
               value={accent}
-              aria-invalid={errors.accent ? true : undefined}
-              aria-describedby={describedBy}
+              invalid={Boolean(errors.accent)}
+              describedBy={describedBy}
               onChange={(event) => {
                 const next = accentOptions.find((option) => option.value === event.target.value);
                 if (next) {
@@ -464,14 +470,13 @@ export function EventForm({
                   clearError("accent");
                 }
               }}
-              className={`${inputClass} cursor-pointer`}
             >
               {accentOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
-            </select>
+            </SelectInput>
           )}
         </Field>
 
@@ -485,16 +490,15 @@ export function EventForm({
         >
           {(describedBy) => (
             <>
-              <input
-                ref={fileRef}
+              <FilePicker
+                inputRef={fileRef}
                 id={ids.image}
                 name="image"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                aria-invalid={errors.image ? true : undefined}
-                aria-describedby={describedBy}
-                onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
-                className="mt-1 w-full rounded-lg border border-line bg-canvas px-2 py-2 text-body text-ink-soft file:me-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-sky-deep file:px-3 file:py-1 file:text-body file:font-semibold file:text-indigo"
+                invalid={Boolean(errors.image)}
+                describedBy={describedBy}
+                buttonLabel={existingImage ? "Trocar imagem" : "Escolher imagem"}
+                selectedLabel={imageFile?.name ?? null}
+                onFiles={(files) => handleFile(files[0] ?? null)}
               />
               {previewUrl || existingImage ? (
                 <div className="mt-3 flex items-center gap-4">
@@ -563,20 +567,14 @@ export function EventForm({
         </Field>
 
         <div className="flex items-center lg:col-span-2">
-          <label
-            htmlFor={publishedId}
-            className="flex cursor-pointer items-center gap-2 text-body text-text"
+          <Checkbox
+            id={publishedId}
+            name="is_published"
+            checked={isPublished}
+            onChange={setIsPublished}
           >
-            <input
-              id={publishedId}
-              name="is_published"
-              type="checkbox"
-              checked={isPublished}
-              onChange={(event) => setIsPublished(event.target.checked)}
-              className="size-6 cursor-pointer rounded-sm border-placeholder"
-            />
             Publicar na agenda
-          </label>
+          </Checkbox>
         </div>
       </div>
 
