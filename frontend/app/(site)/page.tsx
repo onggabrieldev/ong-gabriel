@@ -1,5 +1,4 @@
 import { ActivitiesSection } from "@/components/home/activities-section";
-import { ContactSection } from "@/components/home/contact-section";
 import { DonationSection } from "@/components/home/donation-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { ImpactSection } from "@/components/home/impact-section";
@@ -23,7 +22,6 @@ export default async function Home() {
       <ImpactSection impact={home.impact} />
       <VolunteerSection volunteer={home.volunteer} />
       <TestimonialsSection testimonials={home.testimonials} />
-      <ContactSection contact={home.contact} />
       <TributeSection tribute={home.tribute} />
     </>
   );

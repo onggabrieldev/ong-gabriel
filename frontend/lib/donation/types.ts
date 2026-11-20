@@ -1,4 +1,5 @@
-import type { ContactContent, ImpactStat, MediaAsset, PageLink } from "@/lib/home/types";
+import type { ContactContent } from "@/lib/contact/types";
+import type { ImpactStat, MediaAsset, PageLink } from "@/lib/home/types";
 
 export type DonationHeroContent = {
   title: string;

@@ -84,6 +84,6 @@ export const agendaPageContent: AgendaPageContent = {
     title: "Quer levar um evento da ONG Gabriel até sua instituição?",
     summary:
       "Levamos nossos programas de saúde mental e bem-estar para escolas, empresas e organizações. Entre em contato e vamos conversar sobre como podemos ajudar sua comunidade.",
-    action: { label: "Entre em contato", href: "/#contato" },
+    action: { label: "Entre em contato", href: "/contato" },
   },
 };

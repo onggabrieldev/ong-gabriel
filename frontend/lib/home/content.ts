@@ -1,5 +1,4 @@
 import type { HomePageContent } from "@/lib/home/types";
-import { socialProfiles } from "@/lib/site/navigation";
 
 export const homePageContent: HomePageContent = {
   hero: {
@@ -77,7 +76,7 @@ export const homePageContent: HomePageContent = {
       "A ONG Gabriel oferece atendimento psicológico gratuito e online para quem precisa de apoio emocional.",
       "Basta acessar nossa plataforma de atendimento, preencher o formulário e aguardar o nosso contato. Estamos com você nessa caminhada!",
     ],
-    action: { label: "Conheça nossa plataforma", href: "/#contato" },
+    action: { label: "Conheça nossa plataforma", href: "/contato" },
     image: {
       src: "/images/home/support-hug.webp",
       alt: "Ilustração de duas pessoas se abraçando, com um coração acima delas.",
@@ -156,38 +155,6 @@ export const homePageContent: HomePageContent = {
       height: 377,
     },
     items: [],
-  },
-  contact: {
-    title: "Entre em contato conosco!",
-    description: "Preencha o formulário ou acesse nossas redes sociais",
-    fields: [
-      {
-        id: "name",
-        label: "Nome",
-        placeholder: "Digite seu nome",
-        hint: "Necessário",
-        requiredMessage: "Informe seu nome.",
-      },
-      {
-        id: "email",
-        label: "E-mail",
-        placeholder: "Digite seu e-mail",
-        hint: "Necessário",
-        requiredMessage: "Informe um e-mail válido.",
-      },
-      {
-        id: "message",
-        label: "Mensagem",
-        placeholder: "Escreva sua mensagem",
-        hint: "Necessário",
-        requiredMessage: "Escreva uma mensagem.",
-      },
-    ],
-    submitLabel: "Enviar",
-    inboxEmail: null,
-    unavailableMessage:
-      "O envio pelo site ainda não está disponível. Fale com a gente pelo Instagram enquanto isso.",
-    social: socialProfiles,
   },
   tribute: {
     heading: "Homenagem",

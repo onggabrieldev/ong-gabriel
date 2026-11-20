@@ -183,7 +183,7 @@ export const blogCopy = {
   eventDetailsLabel: "Detalhes",
   suggestTitle: "Quer sugerir um tema ou contar sua história?",
   suggestBody: "Sua voz é importante para nós. Compartilhe suas ideias, sugestões ou experiências.",
-  suggestAction: { label: "Entre em contato", href: "/#contato" },
+  suggestAction: { label: "Entre em contato", href: "/contato" },
   breadcrumbBlog: "Blog",
   breadcrumbArticles: "Artigos",
   shareLabel: "Compartilhe",
