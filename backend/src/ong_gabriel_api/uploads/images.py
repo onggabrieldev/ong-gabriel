@@ -10,7 +10,7 @@ MAX_DIMENSION = 6000
 WEBP_QUALITY = 82
 ALLOWED_FORMATS = frozenset({'JPEG', 'PNG', 'WEBP'})
 
-# Pillow's decompression-bomb cap, set once. process_square_image also rejects
+# Pillow's decompression-bomb cap, set once. The processors also reject
 # dimensions above MAX_DIMENSION after reading the image header.
 Image.MAX_IMAGE_PIXELS = MAX_DIMENSION * MAX_DIMENSION
 
@@ -20,6 +20,35 @@ ERROR_DIMENSIONS = 'A imagem deve ter no máximo 6000x6000 pixels.'
 
 
 def process_square_image(uploaded: File, output_size: int) -> ContentFile:
+    payload = _validated_payload(uploaded)
+    try:
+        with Image.open(BytesIO(payload)) as image:
+            image.load()
+            transposed = ImageOps.exif_transpose(image) or image
+            squared = _center_crop_square(transposed)
+            resized = squared.resize((output_size, output_size), Image.Resampling.LANCZOS)
+            return _save_webp(resized)
+    except Image.DecompressionBombError as exc:
+        raise ValidationError(ERROR_DIMENSIONS) from exc
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise ValidationError(ERROR_INVALID) from exc
+
+
+def process_fitted_image(uploaded: File, max_side: int) -> ContentFile:
+    payload = _validated_payload(uploaded)
+    try:
+        with Image.open(BytesIO(payload)) as image:
+            image.load()
+            transposed = ImageOps.exif_transpose(image) or image
+            transposed.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
+            return _save_webp(transposed)
+    except Image.DecompressionBombError as exc:
+        raise ValidationError(ERROR_DIMENSIONS) from exc
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise ValidationError(ERROR_INVALID) from exc
+
+
+def _validated_payload(uploaded: File) -> bytes:
     payload = _read_limited(uploaded)
     try:
         with Image.open(BytesIO(payload)) as preview:
@@ -33,27 +62,7 @@ def process_square_image(uploaded: File, output_size: int) -> ContentFile:
         raise ValidationError(ERROR_INVALID)
     if width > MAX_DIMENSION or height > MAX_DIMENSION or width < 1 or height < 1:
         raise ValidationError(ERROR_DIMENSIONS)
-    try:
-        with Image.open(BytesIO(payload)) as image:
-            image.load()
-            transposed = ImageOps.exif_transpose(image) or image
-            squared = _center_crop_square(transposed)
-            resized = squared.resize((output_size, output_size), Image.Resampling.LANCZOS)
-            converted = _webp_mode(resized)
-            buffer = BytesIO()
-            converted.save(
-                buffer,
-                format='WEBP',
-                quality=WEBP_QUALITY,
-                method=6,
-                exif=b'',
-                icc_profile=None,
-            )
-    except Image.DecompressionBombError as exc:
-        raise ValidationError(ERROR_DIMENSIONS) from exc
-    except (UnidentifiedImageError, OSError, ValueError) as exc:
-        raise ValidationError(ERROR_INVALID) from exc
-    return ContentFile(buffer.getvalue(), name=f'{uuid4().hex}.webp')
+    return payload
 
 
 def _read_limited(uploaded: File) -> bytes:
@@ -76,6 +85,20 @@ def _center_crop_square(image: Image.Image) -> Image.Image:
     left = (width - side) // 2
     top = (height - side) // 2
     return image.crop((left, top, left + side, top + side))
+
+
+def _save_webp(image: Image.Image) -> ContentFile:
+    converted = _webp_mode(image)
+    buffer = BytesIO()
+    converted.save(
+        buffer,
+        format='WEBP',
+        quality=WEBP_QUALITY,
+        method=6,
+        exif=b'',
+        icc_profile=None,
+    )
+    return ContentFile(buffer.getvalue(), name=f'{uuid4().hex}.webp')
 
 
 def _webp_mode(image: Image.Image) -> Image.Image:

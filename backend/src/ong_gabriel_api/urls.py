@@ -21,6 +21,7 @@ def build_urlpatterns() -> list[URLPattern | URLResolver]:
         path('', include('ong_gabriel_api.testimonials.urls')),
         path('', include('ong_gabriel_api.activities.urls')),
         path('', include('ong_gabriel_api.events.urls')),
+        path('', include('ong_gabriel_api.gallery.urls')),
     ]
     if settings.ENVIRONMENT != 'prod':
         api_v1.extend(
