@@ -1,0 +1,51 @@
+info:
+  name: Update event
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/admin/events/:id"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  params:
+    - name: id
+      type: path
+      value: "{{eventId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "location": "Praça central",
+        "is_published": true
+      }
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.getVar("csrfToken");
+        if (!token) {
+          throw new Error("Run auth/Session first. It sets the csrftoken cookie.");
+        }
+        req.setHeader("X-CSRFToken", token);
+    - type: after-response
+      code: |-
+        const raw = res.getHeader("set-cookie");
+        const lines = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        for (const line of lines) {
+          const match = /(?:^|[;,]\s*)csrftoken=([^;]+)/.exec(line);
+          if (match) {
+            bru.setVar("csrfToken", match[1]);
+          }
+        }
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true

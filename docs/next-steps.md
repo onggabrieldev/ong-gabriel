@@ -24,6 +24,7 @@ Where the Django migration stands and what comes next. The full branch plan and 
 - Branch 2, `feat-accounts-api`: allauth headless, Google, email verification behind a flag, team passwords and recovery, login rate limit, roles, `/api/v1/me/`. See [[accounts|Accounts]].
 - Branch `feat-admin-testimonials`: testimonials API and Next.js admin, `SIGNUP_ENABLED`, API deploy behind Caddy, media volume, daily Postgres backups. See [[testimonials|Testimonials]] and [[deploy|Deploy]]. Merged in PR #16.
 - Branch `feat-admin-activities`: home activities API and admin editor, with images, titles, and descriptions. See [[activities|Activities]].
+- Branch `feat-admin-agenda`: agenda events API and admin editor at `/admin/agenda`. Registrations and the gallery still use placeholders. See [[events|Agenda]].
 
 ## Next: branch 3, `feat-auth-screens`
 
